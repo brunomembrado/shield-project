@@ -4,15 +4,22 @@
   "description": "Blockchain integration service for Shield platform - handles Polygon and Tron network interactions for USDT transactions",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --exec \"npx tsx src/index.ts\"",
+    "postinstall": "prisma generate",
+    "predev": "npm run docker:up && npm run prisma:migrate:deploy && prisma generate",
+    "dev": "ENVIRONMENT=development NODE_ENV=development nodemon --exec \"npx tsx src/index.ts\"",
+    "prod": "ENVIRONMENT=production NODE_ENV=production nodemon --exec \"npx tsx src/index.ts\"",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage --coverageReporters=text --coverageReporters=lcov",
+    "docker:up": "ENVIRONMENT=${ENVIRONMENT:-development} bash -c 'if [ \"$ENVIRONMENT\" = \"development\" ]; then docker start shield-postgres 2>/dev/null || docker-compose -f ../../docker-compose.yml up -d postgres 2>/dev/null || docker compose -f ../../docker-compose.yml up -d postgres 2>/dev/null || echo \"⚠️  Could not start PostgreSQL. Check Docker is running.\"; fi'",
+    "docker:down": "docker-compose -f ../../docker-compose.yml down",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:migrate:dev": "node scripts/migrate-dev.js",
+    "prisma:migrate:deploy": "ENVIRONMENT=development node scripts/migrate-deploy.js",
+    "prisma:migrate:deploy:prod": "ENVIRONMENT=production node scripts/migrate-deploy.js",
+    "prisma:studio": "ENVIRONMENT=development prisma studio"
   },
   "keywords": [
     "shield",

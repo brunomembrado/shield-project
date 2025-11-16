@@ -6,7 +6,7 @@
  * @module blockchain-service/domain/services
  */
 
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 
 /**
  * Token balance result
@@ -71,6 +71,26 @@ export interface NetworkStatus {
 }
 
 /**
+ * Token balance with metadata
+ */
+export interface TokenBalanceData {
+  balance: string;
+  formatted: string;
+  symbol: string;
+  decimals: number;
+}
+
+/**
+ * Gas estimation data
+ */
+export interface GasEstimateData {
+  gasLimit: string;
+  gasPrice: string;
+  totalCost: string;
+  totalCostUSD?: string;
+}
+
+/**
  * Blockchain client interface
  */
 export interface IBlockchainClient {
@@ -102,5 +122,29 @@ export interface IBlockchainClient {
    * Gets network status
    */
   getNetworkStatus(): Promise<NetworkStatus>;
+
+  /**
+   * Gets transaction count for address (nonce for Polygon, tx count for Tron)
+   */
+  getTransactionCount(chain: ChainType, address: string): Promise<number>;
+
+  /**
+   * Gets native token balance (MATIC for Polygon, TRX for Tron)
+   */
+  getNativeBalance(chain: ChainType, address: string): Promise<string>;
+
+  /**
+   * Gets token balance with metadata
+   */
+  getTokenBalance(
+    chain: ChainType,
+    address: string,
+    tokenAddress: string
+  ): Promise<TokenBalanceData>;
+
+  /**
+   * Estimates gas/energy cost for transaction
+   */
+  estimateGas(chain: ChainType, transactionType: string): Promise<GasEstimateData>;
 }
 

@@ -6,64 +6,63 @@
  * - Tron network integration
  * - USDT balance checking
  * - Transaction monitoring and validation
+ * - Wallet verification on blockchain
+ * - Gas estimation and balance caching
  * 
  * @module blockchain-service
  */
 
 import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
-import blockchainRoutes from './routes';
-import {
-  corsOptions,
-  errorHandler,
-  healthCheck,
-  requestLogger,
-  setupSecurityHeaders,
-} from '../../../shared/middleware';
-import { logInfo } from '../../../shared/types';
+import { setupSecurityHeaders, errorHandler, authenticate } from '@shield/shared/middleware';
+import { logInfo } from '@shield/shared/types';
 
-// Load environment variables from service directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const serviceRoot = resolve(__dirname, '..');
-const envFilePath = join(serviceRoot, '.env');
+// ============================================================================
+// STEP 1: Initialize Environment (MUST be first!)
+// ============================================================================
+import { initializeEnvironment } from './config/env.js';
 
-const result = dotenv.config({ path: envFilePath });
-if (result.error) {
-  console.warn(`⚠️  Warning: Could not load .env from ${envFilePath}`);
-  console.warn(`   Error: ${result.error.message}`);
-  // Fallback to default .env loading
-  dotenv.config();
-} else {
-  const environment = process.env.ENVIRONMENT || process.env.NODE_ENV || 'development';
-  console.log(`✅ Loaded environment: ${environment}`);
-}
+const envConfig = initializeEnvironment();
 
+// ============================================================================
+// STEP 2: Initialize Express App
+// ============================================================================
 const app = express();
 const PORT = process.env.PORT || 3004;
 
-// Middleware
-setupSecurityHeaders(app);
-app.use(cors(corsOptions()));
+// ============================================================================
+// STEP 3: Security Middleware (apply early)
+// ============================================================================
+setupSecurityHeaders(app, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+});
+
+// ============================================================================
+// STEP 4: Body Parsing Middleware
+// ============================================================================
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use(requestLogger);
-}
-
-// Routes
-app.use('/blockchain', blockchainRoutes);
-app.get('/health', healthCheck);
-
+// ============================================================================
+// STEP 5: Root & Health Check Endpoints (before auth)
+// ============================================================================
 app.get('/', (req, res) => {
   res.json({
     service: 'Shield Blockchain Service',
     version: process.env.SERVICE_VERSION || '1.0.0',
     status: 'running',
+    environment: envConfig.environment,
     endpoints: {
       health: '/health',
       getBalance: 'GET /blockchain/:chain/balance/:address',
@@ -71,13 +70,42 @@ app.get('/', (req, res) => {
       validateTransaction: 'POST /blockchain/:chain/validate',
       monitorTransfers: 'POST /blockchain/:chain/monitor',
       getNetworkStatus: 'GET /blockchain/:chain/status',
+      verifyWallet: 'GET /blockchain/:chain/verify/:address',
+      getTokenBalance: 'GET /blockchain/:chain/token-balance/:address',
+      estimateGas: 'GET /blockchain/:chain/gas-estimate',
+      supportedChains: 'GET /blockchain/supported-chains',
     },
   });
 });
 
-// Error handling
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'blockchain-service',
+    environment: envConfig.environment,
+  });
+});
+
+// ============================================================================
+// STEP 6: Application Routes (loaded dynamically after env is ready)
+// ============================================================================
+(async () => {
+  try {
+    // Dynamic import ensures env vars are loaded before route modules
+    const { default: blockchainRoutes } = await import('./routes.js');
+    
+    // Mount blockchain routes with mandatory authentication layer
+    app.use('/blockchain', authenticate, blockchainRoutes);
+
+    // ========================================================================
+    // STEP 7: Error Handling (after all routes)
+    // ========================================================================
+    
+    // Global error handler
 app.use(errorHandler);
 
+    // 404 handler (must be last)
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -88,6 +116,9 @@ app.use((req, res) => {
   });
 });
 
+    // ========================================================================
+    // STEP 8: Server Startup
+    // ========================================================================
 if (process.env.NODE_ENV !== 'test') {
   const server = app.listen(PORT, () => {
     console.log('');
@@ -97,17 +128,37 @@ if (process.env.NODE_ENV !== 'test') {
     console.log('');
     console.log(`🚀 Service:     Blockchain Service`);
     console.log(`📡 Port:        ${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🌍 Environment: ${envConfig.environment.toUpperCase()}`);
+        console.log(`🔑 Auth:        ${envConfig.authServiceUrl}`);
     console.log(`❤️  Health:      http://localhost:${PORT}/health`);
     console.log('');
     console.log('📋 Supported Networks:');
-    console.log(`   Polygon (MATIC) - USDT Contract: ${process.env.POLYGON_USDT_CONTRACT || '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'}`);
-    console.log(`   Tron - USDT Contract: ${process.env.TRON_USDT_CONTRACT || 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'}`);
+        console.log(`   🔷 Polygon (MATIC)`);
+        console.log(`      RPC: ${envConfig.polygonRpcUrl}`);
+        console.log(`      USDT: ${envConfig.polygonUsdtAddress}`);
+        console.log(`   🔸 Tron`);
+        console.log(`      RPC: ${envConfig.tronRpcUrl}`);
+        console.log(`      USDT: ${envConfig.tronUsdtAddress}`);
+        console.log('');
+        console.log('📋 Available Endpoints:');
+        console.log(`   GET    /blockchain/:chain/balance/:address         - Get USDT balance`);
+        console.log(`   GET    /blockchain/:chain/transaction/:hash        - Get transaction`);
+        console.log(`   POST   /blockchain/:chain/validate                 - Validate transaction`);
+        console.log(`   POST   /blockchain/:chain/monitor                  - Monitor transfers`);
+        console.log(`   GET    /blockchain/:chain/status                   - Network status`);
+        console.log(`   GET    /blockchain/:chain/verify/:address          - Verify wallet (direct RPC)`);
+        console.log(`   GET    /blockchain/:chain/token-balance/:address   - Get token balance (direct RPC)`);
+        console.log(`   GET    /blockchain/:chain/gas-estimate             - Estimate gas (direct RPC)`);
+        console.log(`   GET    /blockchain/supported-chains                - List supported chains`);
     console.log('');
 
-    logInfo('Blockchain service started successfully', { port: PORT });
+        logInfo('Blockchain service started successfully', {
+          port: PORT,
+          environment: envConfig.environment,
+        });
   });
 
+      // Graceful shutdown handlers
   process.on('SIGINT', () => {
     console.log('\n🚦 Shutting down Blockchain Service gracefully...');
     server.close(() => {
@@ -124,16 +175,23 @@ if (process.env.NODE_ENV !== 'test') {
     });
   });
 
+      // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
     console.error('❌ Uncaught Exception:', error);
     process.exit(1);
   });
 
+      // Handle unhandled promise rejections
   process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
     process.exit(1);
   });
 }
+  } catch (error) {
+    console.error('❌ Failed to start Blockchain Service:', error);
+    process.exit(1);
+  }
+})();
 
 export default app;
 

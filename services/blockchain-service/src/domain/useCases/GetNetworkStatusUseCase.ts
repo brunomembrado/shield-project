@@ -7,12 +7,12 @@
  */
 
 import { IBlockchainClient } from '../services/IBlockchainClient';
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 import {
   ServiceError,
   handleUnknownError,
   ExternalServiceError,
-} from '../../../../shared/errors';
+} from '@shield/shared/errors';
 
 /**
  * Get Network Status Use Case

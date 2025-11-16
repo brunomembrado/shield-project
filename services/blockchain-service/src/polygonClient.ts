@@ -7,8 +7,8 @@
  */
 
 import { ethers } from 'ethers';
-import { ChainType, logError, logInfo } from '../../../shared/types';
-import { weiToToken, tokenToWei } from '../../../shared/utils';
+import { ChainType, logError, logInfo } from '@shield/shared/types';
+import { weiToToken, tokenToWei } from '@shield/shared/utils';
 
 /**
  * USDT contract ABI (ERC-20 standard functions)
@@ -56,7 +56,9 @@ export class PolygonClient {
    */
   async getUSDTBalance(address: string): Promise<string> {
     try {
-      const balance = await this.usdtContract.balanceOf(address);
+      // Normalize address to checksummed format
+      const checksummedAddress = ethers.getAddress(address);
+      const balance = await this.usdtContract.balanceOf(checksummedAddress);
       const decimals = await this.usdtContract.decimals();
       return weiToToken(balance.toString(), decimals);
     } catch (error) {
@@ -195,7 +197,9 @@ export class PolygonClient {
     toBlock: number
   ) {
     try {
-      const filter = this.usdtContract.filters.Transfer(null, toAddress);
+      // Normalize address to checksummed format
+      const checksummedAddress = ethers.getAddress(toAddress);
+      const filter = this.usdtContract.filters.Transfer(null, checksummedAddress);
       const events = await this.usdtContract.queryFilter(filter, fromBlock, toBlock);
 
       const transfers = await Promise.all(
@@ -235,6 +239,114 @@ export class PolygonClient {
         context: 'monitor-transfers',
       });
       throw new Error(`Failed to monitor transfers: ${error}`);
+    }
+  }
+
+  /**
+   * Gets transaction count (nonce) for an address
+   * 
+   * @param address - Wallet address
+   * @returns Transaction count
+   */
+  async getTransactionCount(address: string): Promise<number> {
+    try {
+      // Normalize address to checksummed format
+      const checksummedAddress = ethers.getAddress(address);
+      const count = await this.provider.getTransactionCount(checksummedAddress);
+      return count;
+    } catch (error) {
+      logError(error as Error, { address, chain: ChainType.POLYGON, context: 'get-transaction-count' });
+      throw new Error(`Failed to get transaction count: ${error}`);
+    }
+  }
+
+  /**
+   * Gets native token balance (MATIC) for an address
+   * 
+   * @param address - Wallet address
+   * @returns Balance in wei as string
+   */
+  async getNativeBalance(address: string): Promise<string> {
+    try {
+      // Normalize address to checksummed format
+      const checksummedAddress = ethers.getAddress(address);
+      const balance = await this.provider.getBalance(checksummedAddress);
+      return balance.toString();
+    } catch (error) {
+      logError(error as Error, { address, chain: ChainType.POLYGON, context: 'get-native-balance' });
+      throw new Error(`Failed to get native balance: ${error}`);
+    }
+  }
+
+  /**
+   * Gets token balance with metadata
+   * 
+   * @param address - Wallet address
+   * @param tokenAddress - Token contract address
+   * @returns Token balance with metadata
+   */
+  async getTokenBalance(address: string, tokenAddress: string) {
+    try {
+      // Normalize addresses to checksummed format
+      const checksummedAddress = ethers.getAddress(address);
+      const checksummedTokenAddress = ethers.getAddress(tokenAddress);
+      
+      const tokenContract = new ethers.Contract(
+        checksummedTokenAddress,
+        USDT_ABI,
+        this.provider
+      );
+
+      const [balance, decimals, symbol] = await Promise.all([
+        tokenContract.balanceOf(checksummedAddress),
+        tokenContract.decimals(),
+        tokenContract.symbol(),
+      ]);
+
+      return {
+        balance: balance.toString(),
+        formatted: weiToToken(balance.toString(), decimals),
+        symbol,
+        decimals,
+      };
+    } catch (error) {
+      logError(error as Error, { address, tokenAddress, chain: ChainType.POLYGON, context: 'get-token-balance' });
+      throw new Error(`Failed to get token balance: ${error}`);
+    }
+  }
+
+  /**
+   * Estimates gas cost for a transaction
+   * 
+   * @param transactionType - Type of transaction (transfer, approve, etc.)
+   * @returns Gas estimation data
+   */
+  async estimateGas(transactionType: string) {
+    try {
+      // Get current gas price
+      const feeData = await this.provider.getFeeData();
+      const gasPrice = feeData.gasPrice || BigInt(0);
+
+      // Standard gas limits for different transaction types
+      const gasLimits: Record<string, number> = {
+        'transfer_native': 21000,
+        'transfer_token': 65000,
+        'approve_token': 50000,
+        'swap': 200000,
+      };
+
+      const gasLimit = gasLimits[transactionType] || 65000;
+      const totalCost = BigInt(gasLimit) * gasPrice;
+
+      return {
+        gasLimit: gasLimit.toString(),
+        gasPrice: gasPrice.toString(),
+        totalCost: ethers.formatEther(totalCost),
+        totalCostUSD: null, // Would integrate with price oracle
+      };
+    } catch (error) {
+      logError(error as Error, { transactionType, chain: ChainType.POLYGON, context: 'estimate-gas' });
+      throw new Error(`Failed to estimate gas: ${error}`);
     }
   }
 }

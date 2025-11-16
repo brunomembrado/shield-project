@@ -12,15 +12,15 @@ import { GetTransactionUseCase } from '../../domain/useCases/GetTransactionUseCa
 import { ValidateTransactionUseCase } from '../../domain/useCases/ValidateTransactionUseCase';
 import { MonitorTransfersUseCase } from '../../domain/useCases/MonitorTransfersUseCase';
 import { GetNetworkStatusUseCase } from '../../domain/useCases/GetNetworkStatusUseCase';
-import { createSuccessResponse, createErrorResponse } from '../../../../shared/utils';
-import { ChainType } from '../../../../shared/types';
+import { createSuccessResponse, createErrorResponse } from '@shield/shared/utils';
+import { ChainType } from '@shield/shared/types';
 import {
   BaseError,
   ensureBaseError,
   shouldLogError,
-} from '../../../../shared/errors';
-import { blockchainServiceLogger } from '../../../../shared/logger/serviceLogger';
-import { logControllerEntry, extractLogContext } from '../../../../shared/logger/helpers';
+} from '@shield/shared/errors';
+import { blockchainServiceLogger } from '@shield/shared/logger/serviceLogger';
+import { logControllerEntry, extractLogContext } from '@shield/shared/logger/helpers';
 
 /**
  * Blockchain Controller

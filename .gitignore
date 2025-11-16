@@ -46,6 +46,9 @@ docker-compose.override.yml
 # AWS
 .aws-sam/
 samconfig.toml
+*credentials*.txt
+*credentials*.json
+github-actions-credentials*
 
 # Temporary files
 tmp/

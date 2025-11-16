@@ -7,14 +7,14 @@
  */
 
 import { IBlockchainClient } from '../services/IBlockchainClient';
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 import {
   ServiceError,
   handleUnknownError,
   ValidationError,
   ExternalServiceError,
-} from '../../../../shared/errors';
-import { isNonEmptyString } from '../../../../shared/utils/guards';
+} from '@shield/shared/errors';
+import { isNonEmptyString } from '@shield/shared/utils/guards';
 
 /**
  * Get USDT balance result

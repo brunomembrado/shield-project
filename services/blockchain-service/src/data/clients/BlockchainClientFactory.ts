@@ -6,11 +6,11 @@
  * @module blockchain-service/data/clients
  */
 
-import { ChainType, ServiceError } from '../../../../shared/types';
+import { ChainType, ServiceError } from '@shield/shared/types';
 import { IBlockchainClient } from '../../domain/services/IBlockchainClient';
-import { PolygonClient } from '../polygonClient';
-import { TronClient } from '../tronClient';
-import { isNotNull } from '../../../../shared/utils/guards';
+import { PolygonClient } from '../../polygonClient';
+import { TronClient } from '../../tronClient';
+import { isNotNull } from '@shield/shared/utils/guards';
 
 /**
  * Blockchain Client Factory

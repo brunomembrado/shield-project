@@ -7,14 +7,14 @@
  */
 
 import { IBlockchainClient } from '../services/IBlockchainClient';
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 import {
   ServiceError,
   handleUnknownError,
   ValidationError,
   ExternalServiceError,
-} from '../../../../shared/errors';
-import { isNonEmptyString, isInteger, isNonNegativeNumber } from '../../../../shared/utils/guards';
+} from '@shield/shared/errors';
+import { isNonEmptyString, isInteger, isNonNegativeNumber } from '@shield/shared/utils/guards';
 
 /**
  * Monitor Transfers Use Case

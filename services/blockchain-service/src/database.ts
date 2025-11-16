@@ -7,7 +7,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { logInfo, logError } from '../../../shared/types';
+import { logInfo, logError } from '@shield/shared/types';
 
 const prisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' 

@@ -7,8 +7,8 @@
  */
 
 import TronWeb from 'tronweb';
-import { ChainType, logError, logInfo } from '../../../shared/types';
-import { weiToToken } from '../../../shared/utils';
+import { ChainType, logError, logInfo } from '@shield/shared/types';
+import { weiToToken } from '@shield/shared/utils';
 
 /**
  * Tron network configuration
@@ -247,6 +247,119 @@ export class TronClient {
         context: 'monitor-transfers',
       });
       throw new Error(`Failed to monitor transfers: ${error}`);
+    }
+  }
+
+  /**
+   * Gets transaction count for an address
+   * 
+   * @param address - Wallet address
+   * @returns Transaction count (approximate - Tron doesn't have exact nonce)
+   */
+  async getTransactionCount(address: string): Promise<number> {
+    try {
+      // Tron doesn't have a direct "get transaction count" method
+      // We can get account info and count transactions
+      const account = await this.tronWeb.trx.getAccount(address);
+      
+      // If account doesn't exist, return 0
+      if (!account || Object.keys(account).length === 0) {
+        return 0;
+      }
+
+      // Check if account has any transactions by checking balance or resources
+      // This is an approximation - a real implementation would need to query transaction history
+      const hasActivity = 
+        (account.balance && account.balance > 0) ||
+        (account.assetV2 && account.assetV2.length > 0) ||
+        (account.account_resource && Object.keys(account.account_resource).length > 0);
+
+      return hasActivity ? 1 : 0;
+    } catch (error) {
+      logError(error as Error, { address, chain: ChainType.TRON, context: 'get-transaction-count' });
+      return 0; // Return 0 if error (likely account doesn't exist)
+    }
+  }
+
+  /**
+   * Gets native token balance (TRX) for an address
+   * 
+   * @param address - Wallet address
+   * @returns Balance in SUN (smallest unit) as string
+   */
+  async getNativeBalance(address: string): Promise<string> {
+    try {
+      const balance = await this.tronWeb.trx.getBalance(address);
+      return balance.toString();
+    } catch (error) {
+      logError(error as Error, { address, chain: ChainType.TRON, context: 'get-native-balance' });
+      return '0';
+    }
+  }
+
+  /**
+   * Gets token balance with metadata
+   * 
+   * @param address - Wallet address
+   * @param tokenAddress - Token contract address
+   * @returns Token balance with metadata
+   */
+  async getTokenBalance(address: string, tokenAddress: string) {
+    try {
+      const contract = await this.tronWeb.contract().at(tokenAddress);
+
+      const [balance, decimals, symbol] = await Promise.all([
+        contract.balanceOf(address).call(),
+        contract.decimals().call(),
+        contract.symbol().call(),
+      ]);
+
+      return {
+        balance: balance.toString(),
+        formatted: weiToToken(balance.toString(), decimals),
+        symbol,
+        decimals: Number(decimals),
+      };
+    } catch (error) {
+      logError(error as Error, { address, tokenAddress, chain: ChainType.TRON, context: 'get-token-balance' });
+      throw new Error(`Failed to get token balance: ${error}`);
+    }
+  }
+
+  /**
+   * Estimates energy cost for a transaction
+   * 
+   * @param transactionType - Type of transaction (transfer, approve, etc.)
+   * @returns Gas estimation data (energy for Tron)
+   */
+  async estimateGas(transactionType: string) {
+    try {
+      // Standard energy costs for different transaction types on Tron
+      const energyCosts: Record<string, number> = {
+        'transfer_native': 0, // Native TRX transfers use bandwidth, not energy
+        'transfer_token': 14000, // TRC20 token transfer
+        'approve_token': 10000, // TRC20 approve
+        'swap': 50000, // Approximate
+      };
+
+      const energyRequired = energyCosts[transactionType] || 14000;
+
+      // Get current energy price (approximate - 420 SUN per energy unit)
+      const energyPrice = '420';
+      const totalCost = BigInt(energyRequired) * BigInt(energyPrice);
+
+      // Convert SUN to TRX (1 TRX = 1,000,000 SUN)
+      const totalCostTRX = (Number(totalCost) / 1_000_000).toFixed(6);
+
+      return {
+        gasLimit: energyRequired.toString(),
+        gasPrice: energyPrice,
+        totalCost: totalCostTRX,
+        totalCostUSD: null, // Would integrate with price oracle
+      };
+    } catch (error) {
+      logError(error as Error, { transactionType, chain: ChainType.TRON, context: 'estimate-gas' });
+      throw new Error(`Failed to estimate energy: ${error}`);
     }
   }
 }

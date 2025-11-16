@@ -1,0 +1,931 @@
+{
+	"info": {
+		"_postman_id": "blockchain-service-v2-comprehensive",
+		"name": "Shield Blockchain Service - Comprehensive Tests",
+		"description": "Complete test suite with real wallet addresses and comprehensive test scenarios for Shield Blockchain Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "01. Service Health",
+			"item": [
+				{
+					"name": "Health Check - No Auth Required",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Service is running\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/health",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Supported Chains",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returns supported chains\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.chains).to.include('POLYGON');",
+									"    pm.expect(jsonData.data.chains).to.include('TRON');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/supported-chains",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"supported-chains"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02. POLYGON - USDT Balance (Real Balance)",
+			"item": [
+				{
+					"name": "Get Balance - With USDT (Should be > 0)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Balance is greater than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.balance);",
+									"    pm.expect(balance).to.be.above(0);",
+									"    console.log('USDT Balance:', jsonData.data.balance);",
+									"});",
+									"",
+									"pm.test(\"Chain is POLYGON\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.chain).to.equal('POLYGON');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"balance",
+								"{{polygon_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance - Zero Balance Wallet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Balance is 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.balance);",
+									"    pm.expect(balance).to.equal(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_zero_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"balance",
+								"{{polygon_wallet_zero_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance - Invalid Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Request handles invalid address\", function () {",
+									"    // Could be 200 with 0 balance or error depending on implementation",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400, 500]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_invalid}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"balance",
+								"{{polygon_wallet_invalid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03. TRON - USDT Balance (Real Balance)",
+			"item": [
+				{
+					"name": "Get Balance - With USDT (Should be > 0)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Balance is greater than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.balance);",
+									"    pm.expect(balance).to.be.above(0);",
+									"    console.log('USDT Balance:', jsonData.data.balance);",
+									"});",
+									"",
+									"pm.test(\"Chain is TRON\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.chain).to.equal('TRON');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/balance/{{tron_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"balance",
+								"{{tron_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance - Zero Balance Wallet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Balance is 0 or very small\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.balance);",
+									"    pm.expect(balance).to.be.below(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/balance/{{tron_wallet_zero_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"balance",
+								"{{tron_wallet_zero_balance}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04. Wallet Verification",
+			"item": [
+				{
+					"name": "Verify Polygon Wallet - Exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.exists).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Has transaction activity\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.hasActivity).to.be.true;",
+									"    pm.expect(jsonData.data.transactionCount).to.be.above(0);",
+									"    console.log('Transaction count:', jsonData.data.transactionCount);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/verify/{{polygon_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"verify",
+								"{{polygon_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Polygon Wallet - Zero Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet exists but no activity\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.exists).to.be.true;",
+									"    pm.expect(jsonData.data.transactionCount).to.equal(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/verify/{{polygon_wallet_zero_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"verify",
+								"{{polygon_wallet_zero_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Tron Wallet - Exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.exists).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Has transaction activity\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.hasActivity).to.be.true;",
+									"    pm.expect(jsonData.data.transactionCount).to.be.above(0);",
+									"    console.log('Transaction count:', jsonData.data.transactionCount);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/verify/{{tron_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"verify",
+								"{{tron_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05. Token Balance with Metadata",
+			"item": [
+				{
+					"name": "Get Token Balance - Polygon USDT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returns token metadata\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('balance');",
+									"    pm.expect(jsonData.data).to.have.property('formatted');",
+									"    pm.expect(jsonData.data).to.have.property('symbol');",
+									"    pm.expect(jsonData.data).to.have.property('decimals');",
+									"});",
+									"",
+									"pm.test(\"Token is USDT\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.symbol).to.equal('USDT');",
+									"    pm.expect(jsonData.data.decimals).to.equal(6);",
+									"});",
+									"",
+									"pm.test(\"Has non-zero balance\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.formatted);",
+									"    pm.expect(balance).to.be.above(0);",
+									"    console.log('Formatted USDT:', jsonData.data.formatted);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}?tokenAddress={{polygon_usdt_contract}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"token-balance",
+								"{{polygon_wallet_with_balance}}"
+							],
+							"query": [
+								{
+									"key": "tokenAddress",
+									"value": "{{polygon_usdt_contract}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Token Balance - Tron USDT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returns token metadata\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('balance');",
+									"    pm.expect(jsonData.data).to.have.property('formatted');",
+									"    pm.expect(jsonData.data).to.have.property('symbol');",
+									"    pm.expect(jsonData.data).to.have.property('decimals');",
+									"});",
+									"",
+									"pm.test(\"Token is USDT\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.symbol).to.equal('USDT');",
+									"    pm.expect(jsonData.data.decimals).to.equal(6);",
+									"});",
+									"",
+									"pm.test(\"Has non-zero balance\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var balance = parseFloat(jsonData.data.formatted);",
+									"    pm.expect(balance).to.be.above(0);",
+									"    console.log('Formatted USDT:', jsonData.data.formatted);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/token-balance/{{tron_wallet_with_balance}}?tokenAddress={{tron_usdt_contract}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"token-balance",
+								"{{tron_wallet_with_balance}}"
+							],
+							"query": [
+								{
+									"key": "tokenAddress",
+									"value": "{{tron_usdt_contract}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06. Gas & Network Status",
+			"item": [
+				{
+					"name": "Get Network Status - Polygon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Network is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.isHealthy).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Has network information\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('chainId');",
+									"    pm.expect(jsonData.data).to.have.property('latestBlock');",
+									"    pm.expect(jsonData.data).to.have.property('currentGasPrice');",
+									"    console.log('Latest block:', jsonData.data.latestBlock);",
+									"    console.log('Gas price:', jsonData.data.currentGasPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/status",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estimate Gas - Polygon Token Transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returns gas estimate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('gasLimit');",
+									"    pm.expect(jsonData.data).to.have.property('gasPrice');",
+									"    pm.expect(jsonData.data).to.have.property('totalCost');",
+									"    console.log('Gas estimate:', jsonData.data.totalCost);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/gas-estimate?transactionType=transfer_token",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"gas-estimate"
+							],
+							"query": [
+								{
+									"key": "transactionType",
+									"value": "transfer_token"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Network Status - Tron",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Network is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.isHealthy).to.be.true;",
+									"    console.log('Latest block:', jsonData.data.latestBlock);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/status",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estimate Energy - Tron Token Transfer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returns energy estimate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('energyRequired');",
+									"    console.log('Energy estimate:', jsonData.data);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/TRON/gas-estimate?transactionType=transfer_token",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"TRON",
+								"gas-estimate"
+							],
+							"query": [
+								{
+									"key": "transactionType",
+									"value": "transfer_token"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "07. Security & Error Handling",
+			"item": [
+				{
+					"name": "Missing Auth Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error message indicates authentication required\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"balance",
+								"{{polygon_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code indicates error\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});",
+									"",
+									"pm.test(\"Error indicates invalid chain\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/ETHEREUM/balance/{{polygon_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"ETHEREUM",
+								"balance",
+								"{{polygon_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Malformed Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code indicates error\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+									"});",
+									"",
+									"pm.test(\"Error indicates invalid address\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/invalid-address-123",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"balance",
+								"invalid-address-123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Missing Required Query Parameter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates missing parameter\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"blockchain",
+								"POLYGON",
+								"token-balance",
+								"{{polygon_wallet_with_balance}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
