@@ -64,6 +64,7 @@ app.get('/', (req, res) => {
     environment: envConfig.environment,
     endpoints: {
       health: '/health',
+      apiDocs: '/v1/api-docs',
       createWallet: 'POST /v1/wallets',
       generateWallet: 'POST /v1/wallets/generate',
       listWallets: 'GET /v1/wallets',

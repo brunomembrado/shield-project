@@ -67,6 +67,7 @@ app.get('/', (req, res) => {
     environment: envConfig.environment,
     endpoints: {
       health: '/health',
+      apiDocs: '/v1/api-docs',
       getBalance: 'GET /v1/blockchain/:chain/balance/:address',
       getTransaction: 'GET /v1/blockchain/:chain/transaction/:hash',
       validateTransaction: 'POST /v1/blockchain/:chain/validate',

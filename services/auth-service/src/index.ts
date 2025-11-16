@@ -152,6 +152,7 @@ app.get('/', (req, res) => {
     status: 'running',
     endpoints: {
       health: '/health',
+      apiDocs: '/v1/api-docs',
       register: 'POST /v1/auth/register',
       login: 'POST /v1/auth/login',
       refresh: 'POST /v1/auth/refresh',
