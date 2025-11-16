@@ -333,7 +333,10 @@ export interface ApiErrorResponse {
 /**
  * Validation error details
  */
-export interface ValidationError {
+/**
+ * @deprecated Use ValidationError from @shield/shared/errors instead
+ */
+export interface ValidationErrorDetail {
   field: string;
   message: string;
 }
@@ -344,7 +347,7 @@ export interface ValidationError {
 export interface ValidationErrorResponse {
   success: false;
   message: string;
-  errors: ValidationError[];
+  errors: ValidationErrorDetail[];
   timestamp: string;
 }
 

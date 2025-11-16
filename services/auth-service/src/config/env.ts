@@ -8,13 +8,13 @@
  */
 
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
+import { join, resolve } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const serviceRoot = resolve(__dirname, '../../');
-const envFilePath = join(serviceRoot, '.env');
+// Use process.cwd() as a fallback for test environments
+// In production, this will be the service root
+// In tests, we'll rely on the mock or environment variables
+const serviceRoot = process.env.SERVICE_ROOT || process.cwd();
+const envFilePath = process.env.ENV_FILE_PATH || join(serviceRoot, '.env');
 
 /**
  * Load environment variables from .env file

@@ -81,9 +81,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"My Generated Polygon Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Generates a new Polygon wallet with encrypted private key storage"
 					},
@@ -152,9 +152,9 @@
 							"raw": "{\n  \"chain\": \"TRON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"My Generated Tron Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Generates a new Tron wallet with encrypted private key storage"
 					},
@@ -206,9 +206,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"weak\",\n  \"tag\": \"Test (Should Fail)\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						}
 					},
 					"response": []
@@ -253,9 +253,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"tag\": \"Test\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						}
 					},
 					"response": []
@@ -299,9 +299,9 @@
 							"raw": "{\n  \"chain\": \"BITCOIN\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"Test (Should Fail)\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						}
 					},
 					"response": []
@@ -340,9 +340,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Test without Authorization header"
 					},
@@ -388,9 +388,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON'; DROP TABLE wallets; --\",\n  \"password\": \"TestPassword123!@#\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Test SQL injection protection"
 					},
@@ -467,9 +467,9 @@
 							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{generated_polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
 						},
 						"description": "Reveals the private key of a system-generated wallet with correct password"
 					},
@@ -526,9 +526,9 @@
 							"raw": "{\n  \"password\": \"WrongPassword999!@#\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{generated_polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
 						},
 						"description": "Attempt to reveal private key with wrong password (should fail)"
 					},
@@ -574,9 +574,9 @@
 							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}", "reveal-key"]
 						},
 						"description": "Attempt to reveal private key of an imported wallet (should fail - no private key stored)"
 					},
@@ -621,9 +621,9 @@
 							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/invalid-uuid/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/invalid-uuid/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "invalid-uuid", "reveal-key"]
+							"path": ["v1", "wallets", "invalid-uuid", "reveal-key"]
 						}
 					},
 					"response": []
@@ -667,9 +667,9 @@
 							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/00000000-0000-0000-0000-000000000000/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "00000000-0000-0000-0000-000000000000", "reveal-key"]
+							"path": ["v1", "wallets", "00000000-0000-0000-0000-000000000000", "reveal-key"]
 						}
 					},
 					"response": []
@@ -708,9 +708,9 @@
 							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{generated_polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
 						},
 						"description": "Test without Authorization header"
 					},
@@ -765,9 +765,9 @@
 							"raw": "{\n  \"password\": \"BruteForce001!@#\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{generated_polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
 						},
 						"description": "Test protection against brute force attacks"
 					},
@@ -820,9 +820,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"<script>alert('XSS')</script>\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Test XSS protection in tag field"
 					},
@@ -867,9 +867,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/generate",
+							"raw": "{{wallet_service_url}}/v1/wallets/generate",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "generate"]
+							"path": ["v1", "wallets", "generate"]
 						},
 						"description": "Test maximum tag length validation"
 					},
@@ -914,9 +914,9 @@
 							"raw": "{\n  \"password\": \"\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{generated_polygon_wallet_id}}/reveal-key",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+							"path": ["v1", "wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
 						}
 					},
 					"response": []

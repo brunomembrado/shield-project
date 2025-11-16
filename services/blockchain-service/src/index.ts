@@ -13,8 +13,10 @@
  */
 
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { setupSecurityHeaders, errorHandler, authenticate } from '@shield/shared/middleware';
 import { logInfo } from '@shield/shared/types';
+import { swaggerSpec } from './config/swagger.js';
 
 // ============================================================================
 // STEP 1: Initialize Environment (MUST be first!)
@@ -65,27 +67,34 @@ app.get('/', (req, res) => {
     environment: envConfig.environment,
     endpoints: {
       health: '/health',
-      getBalance: 'GET /blockchain/:chain/balance/:address',
-      getTransaction: 'GET /blockchain/:chain/transaction/:hash',
-      validateTransaction: 'POST /blockchain/:chain/validate',
-      monitorTransfers: 'POST /blockchain/:chain/monitor',
-      getNetworkStatus: 'GET /blockchain/:chain/status',
-      verifyWallet: 'GET /blockchain/:chain/verify/:address',
-      getTokenBalance: 'GET /blockchain/:chain/token-balance/:address',
-      estimateGas: 'GET /blockchain/:chain/gas-estimate',
-      supportedChains: 'GET /blockchain/supported-chains',
+      getBalance: 'GET /v1/blockchain/:chain/balance/:address',
+      getTransaction: 'GET /v1/blockchain/:chain/transaction/:hash',
+      validateTransaction: 'POST /v1/blockchain/:chain/validate',
+      monitorTransfers: 'POST /v1/blockchain/:chain/monitor',
+      getNetworkStatus: 'GET /v1/blockchain/:chain/status',
+      verifyWallet: 'GET /v1/blockchain/:chain/verify/:address',
+      getTokenBalance: 'GET /v1/blockchain/:chain/token-balance/:address',
+      estimateGas: 'GET /v1/blockchain/:chain/gas-estimate',
+      supportedChains: 'GET /v1/blockchain/supported-chains',
     },
   });
 });
 
 app.get('/health', (req, res) => {
   res.json({
+    success: true,
     status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'blockchain-service',
     environment: envConfig.environment,
   });
 });
+
+// Swagger API Documentation (v1)
+app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Shield Blockchain Service API Documentation (v1)',
+}));
 
 // ============================================================================
 // STEP 6: Application Routes (loaded dynamically after env is ready)
@@ -95,8 +104,9 @@ app.get('/health', (req, res) => {
     // Dynamic import ensures env vars are loaded before route modules
     const { default: blockchainRoutes } = await import('./routes.js');
     
-    // Mount blockchain routes with mandatory authentication layer
-    app.use('/blockchain', authenticate, blockchainRoutes);
+    // Mount v1 blockchain routes with mandatory authentication layer
+    // API versioning allows easy migration to v2 by changing prefix
+    app.use('/v1/blockchain', authenticate, blockchainRoutes);
 
     // ========================================================================
     // STEP 7: Error Handling (after all routes)
@@ -140,16 +150,16 @@ if (process.env.NODE_ENV !== 'test') {
         console.log(`      RPC: ${envConfig.tronRpcUrl}`);
         console.log(`      USDT: ${envConfig.tronUsdtAddress}`);
         console.log('');
-        console.log('📋 Available Endpoints:');
-        console.log(`   GET    /blockchain/:chain/balance/:address         - Get USDT balance`);
-        console.log(`   GET    /blockchain/:chain/transaction/:hash        - Get transaction`);
-        console.log(`   POST   /blockchain/:chain/validate                 - Validate transaction`);
-        console.log(`   POST   /blockchain/:chain/monitor                  - Monitor transfers`);
-        console.log(`   GET    /blockchain/:chain/status                   - Network status`);
-        console.log(`   GET    /blockchain/:chain/verify/:address          - Verify wallet (direct RPC)`);
-        console.log(`   GET    /blockchain/:chain/token-balance/:address   - Get token balance (direct RPC)`);
-        console.log(`   GET    /blockchain/:chain/gas-estimate             - Estimate gas (direct RPC)`);
-        console.log(`   GET    /blockchain/supported-chains                - List supported chains`);
+        console.log('📋 Available Endpoints (v1):');
+        console.log(`   GET    /v1/blockchain/:chain/balance/:address         - Get USDT balance`);
+        console.log(`   GET    /v1/blockchain/:chain/transaction/:hash        - Get transaction`);
+        console.log(`   POST   /v1/blockchain/:chain/validate                 - Validate transaction`);
+        console.log(`   POST   /v1/blockchain/:chain/monitor                  - Monitor transfers`);
+        console.log(`   GET    /v1/blockchain/:chain/status                   - Network status`);
+        console.log(`   GET    /v1/blockchain/:chain/verify/:address          - Verify wallet (direct RPC)`);
+        console.log(`   GET    /v1/blockchain/:chain/token-balance/:address   - Get token balance (direct RPC)`);
+        console.log(`   GET    /v1/blockchain/:chain/gas-estimate             - Estimate gas (direct RPC)`);
+        console.log(`   GET    /v1/blockchain/supported-chains                - List supported chains`);
     console.log('');
 
         logInfo('Blockchain service started successfully', {

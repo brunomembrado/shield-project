@@ -1,7 +1,17 @@
 /**
- * Wallet Service Routes
+ * Wallet Service Routes - API v1
  * 
  * Defines HTTP routes and maps them to controller methods
+ * 
+ * API Versioning Strategy:
+ * - Current version: v1 (all routes prefixed with /v1)
+ * - Future version: v2 (will be implemented when breaking changes are needed)
+ * 
+ * Why versioning?
+ * - Allows backward compatibility when introducing breaking changes
+ * - Enables gradual migration for API consumers
+ * - API consumers can upgrade by simply changing /v1 to /v2 in their requests
+ * - Maintains stable contracts for existing integrations
  * 
  * @module wallet-service/routes
  */
@@ -107,10 +117,12 @@ const revealPrivateKeySchema = Joi.object({
 });
 
 /**
- * Routes - All require authentication
+ * ============================================================================
+ * API v1 Routes - All require authentication
+ * ============================================================================
  */
 
-// Generate a new blockchain wallet (with encrypted private key storage)
+// POST /v1/wallets/generate - Generate a new blockchain wallet (with encrypted private key storage)
 router.post(
   '/generate',
   validateRequest(generateWalletSchema),
@@ -153,12 +165,34 @@ router.delete(
   withAuth((req, res) => walletController.deleteWallet(req, res))
 );
 
-// Reveal private key (system-generated wallets only, requires password)
+// POST /v1/wallets/:id/reveal-key - Reveal private key (system-generated wallets only, requires password)
 router.post(
   '/:id/reveal-key',
   validateRequest(walletIdParamSchema, 'params'),
   validateRequest(revealPrivateKeySchema),
   withAuth((req, res) => walletController.revealPrivateKey(req, res))
 );
+
+/**
+ * ============================================================================
+ * Future API v2 Implementation
+ * ============================================================================
+ * 
+ * When implementing v2, create a new router and mount it at /v2/wallets
+ * Example:
+ * 
+ * const v2Router = Router();
+ * // ... v2 routes with updated schemas/controllers
+ * router.use('/v2', v2Router);
+ * 
+ * This allows API consumers to migrate gradually by changing:
+ * POST /v1/wallets -> POST /v2/wallets
+ * GET /v1/wallets/:id -> GET /v2/wallets/:id
+ * 
+ * Benefits:
+ * - Zero downtime migration
+ * - A/B testing capabilities
+ * - Gradual deprecation of v1
+ */
 
 export default router;

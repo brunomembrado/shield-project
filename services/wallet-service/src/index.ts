@@ -10,8 +10,10 @@
  */
 
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { setupSecurityHeaders, errorHandler, authenticate } from '@shield/shared/middleware';
 import { logInfo } from '@shield/shared/types';
+import { swaggerSpec } from './config/swagger.js';
 
 // ============================================================================
 // STEP 1: Initialize Environment (MUST be first!)
@@ -62,11 +64,13 @@ app.get('/', (req, res) => {
     environment: envConfig.environment,
     endpoints: {
       health: '/health',
-      createWallet: 'POST /wallets',
-      listWallets: 'GET /wallets',
-      getWallet: 'GET /wallets/:id',
-      updateWallet: 'PUT /wallets/:id',
-      deleteWallet: 'DELETE /wallets/:id',
+      createWallet: 'POST /v1/wallets',
+      generateWallet: 'POST /v1/wallets/generate',
+      listWallets: 'GET /v1/wallets',
+      getWallet: 'GET /v1/wallets/:id',
+      updateWallet: 'PUT /v1/wallets/:id',
+      deleteWallet: 'DELETE /v1/wallets/:id',
+      revealPrivateKey: 'POST /v1/wallets/:id/reveal-key',
     },
   });
 });
@@ -80,6 +84,12 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Swagger API Documentation (v1)
+app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Shield Wallet Service API Documentation (v1)',
+}));
+
 // ============================================================================
 // STEP 6: Application Routes (loaded dynamically after env is ready)
 // ============================================================================
@@ -88,8 +98,9 @@ app.get('/health', (req, res) => {
     // Dynamic import ensures env vars are loaded before route modules
     const { default: walletRoutes } = await import('./routes.js');
     
-    // Mount wallet routes with mandatory authentication layer
-    app.use('/wallets', authenticate, walletRoutes);
+    // Mount v1 wallet routes with mandatory authentication layer
+    // API versioning allows easy migration to v2 by changing prefix
+    app.use('/v1/wallets', authenticate, walletRoutes);
 
     // ========================================================================
     // STEP 7: Error Handling (after all routes)
@@ -125,12 +136,14 @@ app.get('/health', (req, res) => {
         console.log(`🔑 Auth:        ${envConfig.authServiceUrl}`);
         console.log(`❤️  Health:      http://localhost:${PORT}/health`);
         console.log('');
-        console.log('📋 Available Endpoints:');
-        console.log(`   POST   /wallets         - Create new wallet`);
-        console.log(`   GET    /wallets         - Get all wallets`);
-        console.log(`   GET    /wallets/:id     - Get specific wallet`);
-        console.log(`   PUT    /wallets/:id     - Update wallet`);
-        console.log(`   DELETE /wallets/:id     - Delete wallet`);
+        console.log('📋 Available Endpoints (v1):');
+        console.log(`   POST   /v1/wallets         - Create new wallet`);
+        console.log(`   POST   /v1/wallets/generate - Generate new wallet`);
+        console.log(`   GET    /v1/wallets         - Get all wallets`);
+        console.log(`   GET    /v1/wallets/:id     - Get specific wallet`);
+        console.log(`   PUT    /v1/wallets/:id     - Update wallet`);
+        console.log(`   DELETE /v1/wallets/:id     - Delete wallet`);
+        console.log(`   POST   /v1/wallets/:id/reveal-key - Reveal private key`);
         console.log('');
 
         logInfo('Wallet service started successfully', {

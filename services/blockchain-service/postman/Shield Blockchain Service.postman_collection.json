@@ -84,15 +84,66 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/supported-chains",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/supported-chains",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"supported-chains"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger API Documentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is HTML\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html');",
+									"});",
+									"",
+									"pm.test(\"Contains Swagger UI content\", function () {",
+									"    const responseText = pm.response.text();",
+									"    pm.expect(responseText).to.include('swagger');",
+									"    pm.expect(responseText).to.include('api-docs');",
+									"});",
+									"",
+									"pm.test(\"Swagger endpoint is accessible\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('Swagger UI is available at:', pm.request.url.toString());",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{blockchain_service_url}}/v1/api-docs",
+							"host": [
+								"{{blockchain_service_url}}"
+							],
+							"path": [
+								"v1",
+								"api-docs"
+							]
+						},
+						"description": "Access Swagger API documentation UI"
 					},
 					"response": []
 				}
@@ -137,11 +188,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"balance",
@@ -176,11 +228,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_zero_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/balance/{{polygon_wallet_zero_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"balance",
@@ -210,11 +263,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_invalid}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/balance/{{polygon_wallet_invalid}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"balance",
@@ -265,11 +319,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/balance/{{tron_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/balance/{{tron_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"balance",
@@ -304,11 +359,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/balance/{{tron_wallet_zero_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/balance/{{tron_wallet_zero_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"balance",
@@ -355,11 +411,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/verify/{{polygon_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/verify/{{polygon_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"verify",
@@ -395,11 +452,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/verify/{{polygon_wallet_zero_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/verify/{{polygon_wallet_zero_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"verify",
@@ -441,11 +499,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/verify/{{tron_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/verify/{{tron_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"verify",
@@ -501,11 +560,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}?tokenAddress={{polygon_usdt_contract}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}?tokenAddress={{polygon_usdt_contract}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"token-balance",
@@ -562,11 +622,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/token-balance/{{tron_wallet_with_balance}}?tokenAddress={{tron_usdt_contract}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/token-balance/{{tron_wallet_with_balance}}?tokenAddress={{tron_usdt_contract}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"token-balance",
@@ -621,11 +682,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/status",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/status",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"status"
@@ -662,11 +724,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/gas-estimate?transactionType=transfer_token",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/gas-estimate?transactionType=transfer_token",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"gas-estimate"
@@ -707,11 +770,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/status",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/status",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"status"
@@ -746,11 +810,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/TRON/gas-estimate?transactionType=transfer_token",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/TRON/gas-estimate?transactionType=transfer_token",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"TRON",
 								"gas-estimate"
@@ -797,11 +862,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/balance/{{polygon_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"balance",
@@ -835,11 +901,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/ETHEREUM/balance/{{polygon_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/ETHEREUM/balance/{{polygon_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"ETHEREUM",
 								"balance",
@@ -873,11 +940,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/balance/invalid-address-123",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/balance/invalid-address-123",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"balance",
@@ -911,11 +979,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{blockchain_service_url}}/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}",
+							"raw": "{{blockchain_service_url}}/v1/blockchain/POLYGON/token-balance/{{polygon_wallet_with_balance}}",
 							"host": [
 								"{{blockchain_service_url}}"
 							],
 							"path": [
+								"v1",
 								"blockchain",
 								"POLYGON",
 								"token-balance",

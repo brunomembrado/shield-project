@@ -55,15 +55,5 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.0",
     "tsx": "^4.19.2"
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
   }
 }

@@ -1,0 +1,822 @@
+{
+	"id": "38e2c1f7-ae1e-4a5b-8a56-d07d5fe26593",
+	"name": "Shield Blockchain Service - Comprehensive Tests",
+	"timestamp": "2025-11-16T18:14:22.337Z",
+	"collection_id": "23436771-0946d8c4-5ac9-44fd-aed6-7899ae55af6c",
+	"folder_id": 0,
+	"environment_id": "23436771-cc0db1c3-8cad-46f4-88ce-e0d59a7066fa",
+	"totalPass": 15,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-11-16T18:14:13.618Z",
+	"totalFail": 35,
+	"results": [
+		{
+			"id": "a5944e6b-08c8-4849-9b03-8f707f1dac49",
+			"name": "Health Check - No Auth Required",
+			"url": "http://localhost:3003/health",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Service is running": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Service is running": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Service is running": false
+				}
+			]
+		},
+		{
+			"id": "a9043edd-28ea-457a-9f23-3c4ba624e1ce",
+			"name": "Get Supported Chains",
+			"url": "http://localhost:3003/blockchain/supported-chains",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Returns supported chains": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returns supported chains": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Returns supported chains": false
+				}
+			]
+		},
+		{
+			"id": "f781daba-03de-42fa-b480-23a8d650cb95",
+			"name": "Get Balance - With USDT (Should be > 0)",
+			"url": "http://localhost:3003/blockchain/POLYGON/balance/0xBF61Eb7d514d0f40297B1cca91673A79472d5663",
+			"time": 990,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Response is successful": false,
+				"Balance is greater than 0": false,
+				"Chain is POLYGON": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Response is successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Balance is greater than 0": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Chain is POLYGON": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				990
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Response is successful": false,
+					"Balance is greater than 0": false,
+					"Chain is POLYGON": false
+				}
+			]
+		},
+		{
+			"id": "ea4918fc-15e4-4d14-ab39-8bc2ce8c229f",
+			"name": "Get Balance - Zero Balance Wallet",
+			"url": "http://localhost:3003/blockchain/POLYGON/balance/0x0000000000000000000000000000000000000001",
+			"time": 573,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Balance is 0": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Balance is 0": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				573
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Balance is 0": false
+				}
+			]
+		},
+		{
+			"id": "690f8b91-a0b2-4bc9-83bb-58e8c1e2cc47",
+			"name": "Get Balance - Invalid Address",
+			"url": "http://localhost:3003/blockchain/POLYGON/balance/0x0000000000000000000000000000000000000000",
+			"time": 525,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Request handles invalid address": true
+			},
+			"testPassFailCounts": {
+				"Request handles invalid address": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				525
+			],
+			"allTests": [
+				{
+					"Request handles invalid address": true
+				}
+			]
+		},
+		{
+			"id": "8011f98c-c5fa-411d-ba0c-39ece94f925d",
+			"name": "Get Balance - With USDT (Should be > 0)",
+			"url": "http://localhost:3003/blockchain/TRON/balance/TATkSfANP1BShrGm5aYFLV4g1BAwkRkRvY",
+			"time": 2125,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Response is successful": false,
+				"Balance is greater than 0": false,
+				"Chain is TRON": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Response is successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Balance is greater than 0": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Chain is TRON": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				2125
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Response is successful": false,
+					"Balance is greater than 0": false,
+					"Chain is TRON": false
+				}
+			]
+		},
+		{
+			"id": "b45fb016-4ee0-4d87-9af4-d9d59ab4f96f",
+			"name": "Get Balance - Zero Balance Wallet",
+			"url": "http://localhost:3003/blockchain/TRON/balance/TYASr5UV6HEcXatwdFQfmLVUqQQQMUxHLS",
+			"time": 548,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Balance is 0 or very small": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Balance is 0 or very small": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				548
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Balance is 0 or very small": false
+				}
+			]
+		},
+		{
+			"id": "a2fad88f-f631-4c18-80ab-23566bdfd247",
+			"name": "Verify Polygon Wallet - Exists",
+			"url": "http://localhost:3003/blockchain/POLYGON/verify/0xBF61Eb7d514d0f40297B1cca91673A79472d5663",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Wallet exists": false,
+				"Has transaction activity": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Wallet exists": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Has transaction activity": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Wallet exists": false,
+					"Has transaction activity": false
+				}
+			]
+		},
+		{
+			"id": "0e71ac33-7b0a-48e7-8fc3-cfff47b47289",
+			"name": "Verify Polygon Wallet - Zero Balance",
+			"url": "http://localhost:3003/blockchain/POLYGON/verify/0x0000000000000000000000000000000000000001",
+			"time": 8,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Wallet exists but no activity": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Wallet exists but no activity": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Wallet exists but no activity": false
+				}
+			]
+		},
+		{
+			"id": "6bd11725-0b75-4076-b158-0ecc5f9397bc",
+			"name": "Verify Tron Wallet - Exists",
+			"url": "http://localhost:3003/blockchain/TRON/verify/TATkSfANP1BShrGm5aYFLV4g1BAwkRkRvY",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Wallet exists": false,
+				"Has transaction activity": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Wallet exists": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Has transaction activity": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Wallet exists": false,
+					"Has transaction activity": false
+				}
+			]
+		},
+		{
+			"id": "4189d3cd-2afe-43ed-866c-58fb3266ba6d",
+			"name": "Get Token Balance - Polygon USDT",
+			"url": "http://localhost:3003/blockchain/POLYGON/token-balance/0xBF61Eb7d514d0f40297B1cca91673A79472d5663?tokenAddress=0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+			"time": 7,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Returns token metadata": false,
+				"Token is USDT": false,
+				"Has non-zero balance": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Returns token metadata": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Token is USDT": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Has non-zero balance": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Returns token metadata": false,
+					"Token is USDT": false,
+					"Has non-zero balance": false
+				}
+			]
+		},
+		{
+			"id": "905ff7e9-a695-4a92-a96f-d50915726ba7",
+			"name": "Get Token Balance - Tron USDT",
+			"url": "http://localhost:3003/blockchain/TRON/token-balance/TATkSfANP1BShrGm5aYFLV4g1BAwkRkRvY?tokenAddress=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+			"time": 269,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Returns token metadata": false,
+				"Token is USDT": false,
+				"Has non-zero balance": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Returns token metadata": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Token is USDT": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Has non-zero balance": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				269
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Returns token metadata": false,
+					"Token is USDT": false,
+					"Has non-zero balance": false
+				}
+			]
+		},
+		{
+			"id": "8fb30a0e-9ed1-4379-a65c-34c1440fa436",
+			"name": "Get Network Status - Polygon",
+			"url": "http://localhost:3003/blockchain/POLYGON/status",
+			"time": 1019,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Network is healthy": false,
+				"Has network information": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Network is healthy": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Has network information": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				1019
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Network is healthy": false,
+					"Has network information": false
+				}
+			]
+		},
+		{
+			"id": "0ba96217-ab97-4619-9040-562244a0ac8c",
+			"name": "Estimate Gas - Polygon Token Transfer",
+			"url": "http://localhost:3003/blockchain/POLYGON/gas-estimate?transactionType=transfer_token",
+			"time": 460,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Returns gas estimate": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returns gas estimate": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				460
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Returns gas estimate": false
+				}
+			]
+		},
+		{
+			"id": "7fa36da8-1518-4f68-bb71-4e79faa6fce5",
+			"name": "Get Network Status - Tron",
+			"url": "http://localhost:3003/blockchain/TRON/status",
+			"time": 863,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 200": false,
+				"Network is healthy": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Network is healthy": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				863
+			],
+			"allTests": [
+				{
+					"Status code is 200": false,
+					"Network is healthy": false
+				}
+			]
+		},
+		{
+			"id": "fe31b0f8-0877-4c4b-9c32-14f364ea2959",
+			"name": "Estimate Energy - Tron Token Transfer",
+			"url": "http://localhost:3003/blockchain/TRON/gas-estimate?transactionType=transfer_token",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Returns energy estimate": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returns energy estimate": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Returns energy estimate": false
+				}
+			]
+		},
+		{
+			"id": "3706c309-5e67-45f3-8526-2521b557ddcf",
+			"name": "Missing Auth Token",
+			"url": "http://localhost:3003/blockchain/POLYGON/balance/0xBF61Eb7d514d0f40297B1cca91673A79472d5663",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Error message indicates authentication required": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message indicates authentication required": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Error message indicates authentication required": true
+				}
+			]
+		},
+		{
+			"id": "a98f599e-83f2-41f1-b2f8-98d021f60d8f",
+			"name": "Invalid Chain",
+			"url": "http://localhost:3003/blockchain/ETHEREUM/balance/0xBF61Eb7d514d0f40297B1cca91673A79472d5663",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code indicates error": true,
+				"Error indicates invalid chain": true
+			},
+			"testPassFailCounts": {
+				"Status code indicates error": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error indicates invalid chain": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code indicates error": true,
+					"Error indicates invalid chain": true
+				}
+			]
+		},
+		{
+			"id": "ac81a7a9-2cc9-4a6c-9596-a5210a073621",
+			"name": "Malformed Address",
+			"url": "http://localhost:3003/blockchain/POLYGON/balance/invalid-address-123",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code indicates error": true,
+				"Error indicates invalid address": true
+			},
+			"testPassFailCounts": {
+				"Status code indicates error": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error indicates invalid address": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code indicates error": true,
+					"Error indicates invalid address": true
+				}
+			]
+		},
+		{
+			"id": "c1a795b4-b2f7-40ae-85a7-5dcaf7b19b46",
+			"name": "Missing Required Query Parameter",
+			"url": "http://localhost:3003/blockchain/POLYGON/token-balance/0xBF61Eb7d514d0f40297B1cca91673A79472d5663",
+			"time": 7,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 400": false,
+				"Error indicates missing parameter": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Error indicates missing parameter": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 400": false,
+					"Error indicates missing parameter": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 7446,
+	"collection": {
+		"requests": [
+			{
+				"id": "a5944e6b-08c8-4849-9b03-8f707f1dac49",
+				"method": "GET"
+			},
+			{
+				"id": "a9043edd-28ea-457a-9f23-3c4ba624e1ce",
+				"method": "GET"
+			},
+			{
+				"id": "f781daba-03de-42fa-b480-23a8d650cb95",
+				"method": "GET"
+			},
+			{
+				"id": "ea4918fc-15e4-4d14-ab39-8bc2ce8c229f",
+				"method": "GET"
+			},
+			{
+				"id": "690f8b91-a0b2-4bc9-83bb-58e8c1e2cc47",
+				"method": "GET"
+			},
+			{
+				"id": "8011f98c-c5fa-411d-ba0c-39ece94f925d",
+				"method": "GET"
+			},
+			{
+				"id": "b45fb016-4ee0-4d87-9af4-d9d59ab4f96f",
+				"method": "GET"
+			},
+			{
+				"id": "a2fad88f-f631-4c18-80ab-23566bdfd247",
+				"method": "GET"
+			},
+			{
+				"id": "0e71ac33-7b0a-48e7-8fc3-cfff47b47289",
+				"method": "GET"
+			},
+			{
+				"id": "6bd11725-0b75-4076-b158-0ecc5f9397bc",
+				"method": "GET"
+			},
+			{
+				"id": "4189d3cd-2afe-43ed-866c-58fb3266ba6d",
+				"method": "GET"
+			},
+			{
+				"id": "905ff7e9-a695-4a92-a96f-d50915726ba7",
+				"method": "GET"
+			},
+			{
+				"id": "8fb30a0e-9ed1-4379-a65c-34c1440fa436",
+				"method": "GET"
+			},
+			{
+				"id": "0ba96217-ab97-4619-9040-562244a0ac8c",
+				"method": "GET"
+			},
+			{
+				"id": "7fa36da8-1518-4f68-bb71-4e79faa6fce5",
+				"method": "GET"
+			},
+			{
+				"id": "fe31b0f8-0877-4c4b-9c32-14f364ea2959",
+				"method": "GET"
+			},
+			{
+				"id": "3706c309-5e67-45f3-8526-2521b557ddcf",
+				"method": "GET"
+			},
+			{
+				"id": "a98f599e-83f2-41f1-b2f8-98d021f60d8f",
+				"method": "GET"
+			},
+			{
+				"id": "ac81a7a9-2cc9-4a6c-9596-a5210a073621",
+				"method": "GET"
+			},
+			{
+				"id": "c1a795b4-b2f7-40ae-85a7-5dcaf7b19b46",
+				"method": "GET"
+			}
+		]
+	}
+}

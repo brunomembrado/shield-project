@@ -99,7 +99,7 @@ export function encrypt(plaintext: string, additionalData?: string): EncryptedDa
     
     // Add additional authenticated data if provided
     if (additionalData) {
-      cipher.setAAD(Buffer.from(additionalData, 'utf8'));
+      (cipher as any).setAAD(Buffer.from(additionalData, 'utf8'));
     }
     
     // Encrypt data
@@ -107,7 +107,7 @@ export function encrypt(plaintext: string, additionalData?: string): EncryptedDa
     encrypted += cipher.final('hex');
     
     // Get authentication tag
-    const authTag = cipher.getAuthTag();
+    const authTag = (cipher as any).getAuthTag();
     
     // Combine salt + encrypted data for storage
     const combined = Buffer.concat([salt, Buffer.from(encrypted, 'hex')]);
@@ -155,11 +155,11 @@ export function decrypt(encryptedData: EncryptedData, additionalData?: string): 
     
     // Create decipher
     const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-    decipher.setAuthTag(authTag);
+    (decipher as any).setAuthTag(authTag);
     
     // Add additional authenticated data if provided
     if (additionalData) {
-      decipher.setAAD(Buffer.from(additionalData, 'utf8'));
+      (decipher as any).setAAD(Buffer.from(additionalData, 'utf8'));
     }
     
     // Decrypt data
@@ -411,7 +411,7 @@ export class FieldEncryption {
    * @param fieldName - Field name (used as additional authenticated data)
    * @returns Encrypted value as JSON string
    */
-  static encryptField(value: unknown, fieldName: string): string {
+  static encryptField(value: unknown, fieldName: string): string | null | undefined {
     if (value === null || value === undefined) return value;
     
     const encrypted = encrypt(JSON.stringify(value), fieldName);

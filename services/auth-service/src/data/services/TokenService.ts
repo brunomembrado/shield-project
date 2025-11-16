@@ -52,7 +52,7 @@ export class TokenService implements ITokenService {
     };
 
     return jwt.sign(payload, this.accessTokenSecret, {
-      expiresIn: this.accessTokenExpiresIn,
+      expiresIn: this.accessTokenExpiresIn as string | number,
     });
   }
 
@@ -67,7 +67,7 @@ export class TokenService implements ITokenService {
     };
 
     return jwt.sign(payload, this.refreshTokenSecret, {
-      expiresIn: this.refreshTokenExpiresIn,
+      expiresIn: this.refreshTokenExpiresIn as string | number,
     });
   }
 

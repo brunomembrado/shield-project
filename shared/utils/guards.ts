@@ -102,7 +102,7 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
 export function hasKey<T extends Record<string, unknown>>(
   obj: T,
   key: string
-): key is keyof T {
+): key is string & keyof T {
   return key in obj;
 }
 

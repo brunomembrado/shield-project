@@ -1,7 +1,17 @@
 /**
- * Blockchain Service Routes
+ * Blockchain Service Routes - API v1
  * 
  * Defines HTTP routes and maps them to controller methods
+ * 
+ * API Versioning Strategy:
+ * - Current version: v1 (all routes prefixed with /v1)
+ * - Future version: v2 (will be implemented when breaking changes are needed)
+ * 
+ * Why versioning?
+ * - Allows backward compatibility when introducing breaking changes
+ * - Enables gradual migration for API consumers
+ * - API consumers can upgrade by simply changing /v1 to /v2 in their requests
+ * - Maintains stable contracts for existing integrations
  * 
  * @module blockchain-service/routes
  */
@@ -87,6 +97,7 @@ const monitorTransfersBodySchema = Joi.object({
 // Token balance query schema
 const tokenBalanceQuerySchema = Joi.object({
   token: addressSchema.optional(),
+  tokenAddress: addressSchema.optional(),
 });
 
 // Gas estimation query schema
@@ -95,15 +106,18 @@ const gasEstimateQuerySchema = Joi.object({
     .valid('transfer_native', 'transfer_token', 'approve_token', 'swap')
     .optional()
     .default('transfer_token'),
+  transactionType: Joi.string()
+    .valid('transfer_native', 'transfer_token', 'approve_token', 'swap')
+    .optional(),
 });
 
 /**
  * ============================================================================
- * EXISTING ROUTES (USDT Balance, Transactions, Validation)
+ * API v1 Routes (USDT Balance, Transactions, Validation)
  * ============================================================================
  */
 
-// GET /:chain/balance/:address - Get USDT balance for an address
+// GET /v1/:chain/balance/:address - Get USDT balance for an address
 router.get(
   '/:chain/balance/:address',
   validateRequest(addressParamSchema, 'params'),
@@ -187,10 +201,12 @@ router.get(
   withAuth(async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { chain, address } = req.params;
-      const { token } = req.query;
+      const { token, tokenAddress: tokenAddressParam } = req.query;
 
       // Default to USDT contract if not specified
+      // Accept both 'token' and 'tokenAddress' query parameters
       const tokenAddress =
+        (tokenAddressParam as string) ||
         (token as string) ||
         (chain === 'POLYGON'
           ? process.env.POLYGON_USDT_ADDRESS!
@@ -231,7 +247,10 @@ router.get(
   withAuth(async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { chain } = req.params;
-      const { type } = req.query;
+      const { type, transactionType } = req.query;
+
+      // Accept both 'type' and 'transactionType' query parameters
+      const txType = (transactionType as string) || (type as string) || 'transfer_token';
 
       const useCase =
         chain === 'POLYGON'
@@ -240,7 +259,7 @@ router.get(
 
       const result = await useCase.execute(
         chain as 'POLYGON' | 'TRON',
-        type as string,
+        txType,
         req.correlationId || ''
       );
 
@@ -265,12 +284,13 @@ router.get(
  * ============================================================================
  */
 
-// GET /supported-chains - Get list of supported blockchain networks
+// GET /v1/supported-chains - Get list of supported blockchain networks
 router.get('/supported-chains', withAuth((req, res) => {
   res.status(200).json({
     success: true,
     data: {
-      chains: [
+      chains: ['POLYGON', 'TRON'],
+      details: [
         {
           name: 'POLYGON',
           displayName: 'Polygon',
@@ -288,5 +308,26 @@ router.get('/supported-chains', withAuth((req, res) => {
     message: 'Supported chains retrieved successfully',
   });
 }));
+
+/**
+ * ============================================================================
+ * Future API v2 Implementation
+ * ============================================================================
+ * 
+ * When implementing v2, create a new router and mount it at /v2/blockchain
+ * Example:
+ * 
+ * const v2Router = Router();
+ * // ... v2 routes with updated schemas/controllers
+ * router.use('/v2', v2Router);
+ * 
+ * This allows API consumers to migrate gradually by changing:
+ * GET /v1/blockchain/POLYGON/balance/0x... -> GET /v2/blockchain/POLYGON/balance/0x...
+ * 
+ * Benefits:
+ * - Zero downtime migration
+ * - A/B testing capabilities
+ * - Gradual deprecation of v1
+ */
 
 export default router;

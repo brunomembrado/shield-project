@@ -6,12 +6,12 @@ import { logError } from '../types';
 /**
  * Extended Express Request with authenticated user information
  */
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Omit<Request, 'user'> {
   user?: {
-    id: string;
+    userId: string;
     email: string;
-    iat?: number;
-    exp?: number;
+    iat: number;
+    exp: number;
   };
 }
 
@@ -115,10 +115,10 @@ export const authenticate = async (
 
     // Attach user to request
     (req as AuthenticatedRequest).user = {
-      id: decoded.userId,
+      userId: decoded.userId,
       email: decoded.email,
-      iat: decoded.iat,
-      exp: decoded.exp,
+      iat: decoded.iat ?? 0,
+      exp: decoded.exp ?? 0,
     };
 
     next();
@@ -130,7 +130,7 @@ export const authenticate = async (
     });
 
     if (shouldLogError(baseError)) {
-      logError('Authentication failed', baseError);
+      logError(baseError, { message: 'Authentication failed' });
     }
 
     // CRITICAL: Send response and DO NOT call next()
@@ -181,10 +181,10 @@ export const optionalAuth = async (
       
       if (decoded.userId && decoded.email) {
         (req as AuthenticatedRequest).user = {
-          id: decoded.userId,
+          userId: decoded.userId,
           email: decoded.email,
-          iat: decoded.iat,
-          exp: decoded.exp,
+          iat: decoded.iat ?? 0,
+          exp: decoded.exp ?? 0,
         };
       }
     } catch (error) {

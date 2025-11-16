@@ -36,6 +36,8 @@ try {
 // Now import other modules (they can safely use process.env)
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 import {
   corsOptions,
   errorHandler,
@@ -137,6 +139,12 @@ if (process.env.NODE_ENV !== 'test') {
 // Health check and root endpoints (available immediately)
 app.get('/health', healthCheck);
 
+// Swagger API Documentation (v1)
+app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Shield Auth Service API Documentation (v1)',
+}));
+
 app.get('/', (req, res) => {
   res.json({
     service: 'Shield Auth Service',
@@ -144,10 +152,10 @@ app.get('/', (req, res) => {
     status: 'running',
     endpoints: {
       health: '/health',
-      register: 'POST /auth/register',
-      login: 'POST /auth/login',
-      refresh: 'POST /auth/refresh',
-      logout: 'POST /auth/logout',
+      register: 'POST /v1/auth/register',
+      login: 'POST /v1/auth/login',
+      refresh: 'POST /v1/auth/refresh',
+      logout: 'POST /v1/auth/logout',
     },
   });
 });
@@ -159,13 +167,30 @@ app.get('/', (req, res) => {
 // Start server only if not in test mode
 // Wrap in async to ensure routes are loaded before server starts
 (async () => {
+  // Skip route loading in test mode
+  if (process.env.NODE_ENV === 'test') {
+    // In test mode, just set up basic error handlers
+    app.use(errorHandler);
+    app.use((req, res) => {
+      res.status(404).json({
+        success: false,
+        error: 'NOT_FOUND',
+        message: 'Route not found',
+        path: req.path,
+        timestamp: new Date().toISOString(),
+      });
+    });
+    return; // Exit early in test mode
+  }
+
   // Import routes dynamically after environment is initialized
   // This ensures JWT_SECRET is set before TokenService is created
   try {
     const routesModule = await import('./routes');
     authRoutes = routesModule.default;
-    app.use('/auth', authRoutes);
-    console.log('✅ Routes loaded successfully');
+    // Mount v1 routes - API versioning allows easy migration to v2 by changing prefix
+    app.use('/v1/auth', authRoutes);
+    console.log('✅ Routes loaded successfully (v1)');
     
     // Register error handlers AFTER routes are loaded
     // Global error handler - must be last middleware
@@ -200,11 +225,11 @@ app.get('/', (req, res) => {
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`❤️  Health:      http://localhost:${PORT}/health`);
     console.log('');
-    console.log('📋 Available Endpoints:');
-    console.log(`   POST   /auth/register  - User registration`);
-    console.log(`   POST   /auth/login     - User login`);
-    console.log(`   POST   /auth/refresh   - Refresh access token`);
-    console.log(`   POST   /auth/logout    - User logout`);
+    console.log('📋 Available Endpoints (v1):');
+    console.log(`   POST   /v1/auth/register  - User registration`);
+    console.log(`   POST   /v1/auth/login     - User login`);
+    console.log(`   POST   /v1/auth/refresh   - Refresh access token`);
+    console.log(`   POST   /v1/auth/logout    - User logout`);
     console.log('');
 
     logInfo('Auth service started successfully', { port: PORT });

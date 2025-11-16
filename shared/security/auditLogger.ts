@@ -430,7 +430,6 @@ export class AuditLogger {
     return this.logFromRequest(action, req, {
       metadata: details,
       success: false,
-      severity: AuditSeverity.CRITICAL,
     });
   }
 

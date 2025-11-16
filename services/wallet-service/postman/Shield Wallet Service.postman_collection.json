@@ -76,6 +76,48 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Swagger API Documentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is HTML\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html');",
+									"});",
+									"",
+									"pm.test(\"Contains Swagger UI content\", function () {",
+									"    const responseText = pm.response.text();",
+									"    pm.expect(responseText).to.include('swagger');",
+									"    pm.expect(responseText).to.include('api-docs');",
+									"});",
+									"",
+									"pm.test(\"Swagger endpoint is accessible\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('Swagger UI is available at:', pm.request.url.toString());",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{wallet_service_url}}/v1/api-docs",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["v1", "api-docs"]
+						},
+						"description": "Access Swagger API documentation UI"
+					},
+					"response": []
 				}
 			]
 		},
@@ -117,9 +159,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -162,9 +204,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -208,9 +250,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -275,9 +317,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1\",\n  \"tag\": \"My Polygon Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -323,9 +365,9 @@
 							"raw": "{\n  \"chain\": \"TRON\",\n  \"address\": \"TYDzsYUEpvnYmQk4zGP9sWWcTEd2MiAtW6\",\n  \"tag\": \"My Tron Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -373,9 +415,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -419,9 +461,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"{{polygon_wallet_address}}\",\n  \"tag\": \"Duplicate Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -467,9 +509,9 @@
 							"raw": "{\n  \"chain\": \"ETHEREUM\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Invalid Chain\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -514,9 +556,9 @@
 							"raw": "{\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"No Chain\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -561,9 +603,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"tag\": \"No Address\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -608,9 +650,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x123\",\n  \"tag\": \"Too Short\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -655,9 +697,9 @@
 							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"This is a very long tag that exceeds the maximum allowed length of 100 characters for a wallet tag in the system\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -711,9 +753,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -750,9 +792,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets?chain=POLYGON",
+							"raw": "{{wallet_service_url}}/v1/wallets?chain=POLYGON",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"],
+							"path": ["v1", "wallets"],
 							"query": [
 								{
 									"key": "chain",
@@ -795,9 +837,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets?chain=TRON",
+							"raw": "{{wallet_service_url}}/v1/wallets?chain=TRON",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"],
+							"path": ["v1", "wallets"],
 							"query": [
 								{
 									"key": "chain",
@@ -840,9 +882,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets?isActive=true",
+							"raw": "{{wallet_service_url}}/v1/wallets?isActive=true",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"],
+							"path": ["v1", "wallets"],
 							"query": [
 								{
 									"key": "isActive",
@@ -877,9 +919,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets",
+							"raw": "{{wallet_service_url}}/v1/wallets",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets"]
+							"path": ["v1", "wallets"]
 						}
 					},
 					"response": []
@@ -922,9 +964,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -959,9 +1001,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000",
+							"raw": "{{wallet_service_url}}/v1/wallets/00000000-0000-0000-0000-000000000000",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "00000000-0000-0000-0000-000000000000"]
+							"path": ["v1", "wallets", "00000000-0000-0000-0000-000000000000"]
 						}
 					},
 					"response": []
@@ -998,9 +1040,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/invalid-uuid-123",
+							"raw": "{{wallet_service_url}}/v1/wallets/invalid-uuid-123",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "invalid-uuid-123"]
+							"path": ["v1", "wallets", "invalid-uuid-123"]
 						}
 					},
 					"response": []
@@ -1050,9 +1092,9 @@
 							"raw": "{\n  \"tag\": \"Updated Polygon Wallet\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1095,9 +1137,9 @@
 							"raw": "{\n  \"isActive\": false\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{tron_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{tron_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{tron_wallet_id}}"]
+							"path": ["v1", "wallets", "{{tron_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1139,9 +1181,9 @@
 							"raw": "{\n  \"isActive\": true\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{tron_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{tron_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{tron_wallet_id}}"]
+							"path": ["v1", "wallets", "{{tron_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1184,9 +1226,9 @@
 							"raw": "{\n  \"tag\": \"Updated Tag and Status\",\n  \"isActive\": true\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{no_tag_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{no_tag_wallet_id}}"]
+							"path": ["v1", "wallets", "{{no_tag_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1228,9 +1270,9 @@
 							"raw": "{\n  \"tag\": \"Updated\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000",
+							"raw": "{{wallet_service_url}}/v1/wallets/00000000-0000-0000-0000-000000000000",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "00000000-0000-0000-0000-000000000000"]
+							"path": ["v1", "wallets", "00000000-0000-0000-0000-000000000000"]
 						}
 					},
 					"response": []
@@ -1273,9 +1315,9 @@
 							"raw": "{}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1320,9 +1362,9 @@
 							"raw": "{\n  \"tag\": \"This is a very long tag that exceeds the maximum allowed length of 100 characters for a wallet tag in the system\"\n}"
 						},
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1363,9 +1405,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{no_tag_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{no_tag_wallet_id}}"]
+							"path": ["v1", "wallets", "{{no_tag_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1399,9 +1441,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{no_tag_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{no_tag_wallet_id}}"]
+							"path": ["v1", "wallets", "{{no_tag_wallet_id}}"]
 						}
 					},
 					"response": []
@@ -1437,9 +1479,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/not-a-uuid",
+							"raw": "{{wallet_service_url}}/v1/wallets/not-a-uuid",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "not-a-uuid"]
+							"path": ["v1", "wallets", "not-a-uuid"]
 						}
 					},
 					"response": []
@@ -1468,9 +1510,9 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"raw": "{{wallet_service_url}}/v1/wallets/{{polygon_wallet_id}}",
 							"host": ["{{wallet_service_url}}"],
-							"path": ["wallets", "{{polygon_wallet_id}}"]
+							"path": ["v1", "wallets", "{{polygon_wallet_id}}"]
 						}
 					},
 					"response": []

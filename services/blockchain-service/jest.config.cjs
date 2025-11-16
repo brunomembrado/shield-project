@@ -1,5 +1,5 @@
 /**
- * Jest configuration for Wallet Service tests
+ * Jest configuration for Blockchain Service tests
  */
 
 module.exports = {
@@ -14,6 +14,14 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
   verbose: true,
   forceExit: true,
   clearMocks: true,

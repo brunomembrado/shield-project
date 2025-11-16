@@ -626,7 +626,7 @@ export function validateEnvironment(serviceName: string = 'generic'): ValidatedE
   } catch (error: unknown) {
     // Check if it's a Joi validation error (Joi adds isJoi property)
     if (error && typeof error === 'object' && 'isJoi' in error && (error as { isJoi: boolean }).isJoi) {
-      const joiError = error as { details: Array<{ path: (string | number)[]; message: string }> };
+      const joiError = error as unknown as { details: Array<{ path: (string | number)[]; message: string }> };
       console.error('╔════════════════════════════════════════════════════════════════╗');
       console.error('║  ❌ FATAL: Environment Validation Failed                      ║');
       console.error('╚════════════════════════════════════════════════════════════════╝\n');
