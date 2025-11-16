@@ -33,16 +33,15 @@ RUN addgroup -g 1001 -S nodejs && \
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and prisma schema BEFORE npm ci
 COPY package*.json ./
+COPY --from=builder /app/prisma ./prisma
 
-# Install production dependencies only
+# Install production dependencies only (will run prisma generate via postinstall)
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Change ownership to non-root user
 RUN chown -R nodejs:nodejs /app
