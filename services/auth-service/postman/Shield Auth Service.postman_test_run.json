@@ -1,0 +1,582 @@
+{
+	"id": "87864628-d5a6-4dce-96b1-40b96f00ad8c",
+	"name": "Shield Auth Service",
+	"timestamp": "2025-11-16T01:54:09.657Z",
+	"collection_id": "23436771-b8d05e07-f4e9-49d3-a6a5-dc8cfe5e40c7",
+	"folder_id": 0,
+	"environment_id": "23436771-892a081a-7fc7-41e9-a42d-ca8e9d7ad0b3",
+	"totalPass": 30,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-11-16T01:54:07.525Z",
+	"totalFail": 5,
+	"results": [
+		{
+			"id": "2bf17bf7-5eb4-48da-a505-d5b74420d494",
+			"name": "Get Service Info",
+			"url": "http://localhost:3001/",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response has service info": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has service info": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response has service info": true
+				}
+			]
+		},
+		{
+			"id": "ca6f22c3-e298-4ee1-9f2f-85f141a280ed",
+			"name": "Health Check",
+			"url": "http://localhost:3001/health",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Health check response is valid": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Health check response is valid": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Health check response is valid": false
+				}
+			]
+		},
+		{
+			"id": "d77cfc5f-9822-47d2-8fce-fa0fb410e58f",
+			"name": "Register User - Success",
+			"url": "http://localhost:3001/auth/register",
+			"time": 466,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response has success flag": true,
+				"Response contains tokens": true,
+				"Save tokens to environment": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has success flag": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains tokens": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Save tokens to environment": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				466
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response has success flag": true,
+					"Response contains tokens": true,
+					"Save tokens to environment": true
+				}
+			]
+		},
+		{
+			"id": "a947062d-122a-47f5-b1ec-9101deb35459",
+			"name": "Register User - Invalid Email",
+			"url": "http://localhost:3001/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true,
+				"Response indicates validation error": false
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates validation error": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 400": true,
+					"Response indicates validation error": false
+				}
+			]
+		},
+		{
+			"id": "4ccd8de3-fff2-4ce7-b2f1-fc0354c1dd60",
+			"name": "Register User - Weak Password",
+			"url": "http://localhost:3001/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true,
+				"Response indicates password validation error": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates password validation error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 400": true,
+					"Response indicates password validation error": true
+				}
+			]
+		},
+		{
+			"id": "43f3304f-e6d3-45a2-b69b-594e38d95ede",
+			"name": "Register User - Duplicate Email",
+			"url": "http://localhost:3001/auth/register",
+			"time": 8,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"Status code is 409": true,
+				"Response indicates conflict": true
+			},
+			"testPassFailCounts": {
+				"Status code is 409": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Status code is 409": true,
+					"Response indicates conflict": true
+				}
+			]
+		},
+		{
+			"id": "ec8c9969-5179-4d27-b438-73999bb41cf7",
+			"name": "Login - Success",
+			"url": "http://localhost:3001/auth/login",
+			"time": 473,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response has success flag": true,
+				"Response contains tokens": true,
+				"Save tokens to environment": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has success flag": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains tokens": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Save tokens to environment": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				473
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response has success flag": true,
+					"Response contains tokens": true,
+					"Save tokens to environment": true
+				}
+			]
+		},
+		{
+			"id": "803525a7-cb38-4753-b40f-63253049e836",
+			"name": "Login - Invalid Credentials",
+			"url": "http://localhost:3001/auth/login",
+			"time": 11,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Response indicates authentication error": false
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates authentication error": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Response indicates authentication error": false
+				}
+			]
+		},
+		{
+			"id": "57d303bc-8802-4e4e-895d-76d949bac020",
+			"name": "Login - User Not Found",
+			"url": "http://localhost:3001/auth/login",
+			"time": 7,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Response indicates authentication error": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates authentication error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Response indicates authentication error": true
+				}
+			]
+		},
+		{
+			"id": "3647aa1b-7787-471d-9775-1384b4dddf0b",
+			"name": "Refresh Token - Success",
+			"url": "http://localhost:3001/auth/refresh",
+			"time": 24,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response has success flag": true,
+				"Response contains new tokens": true,
+				"Save new tokens to environment": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has success flag": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains new tokens": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Save new tokens to environment": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				24
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response has success flag": true,
+					"Response contains new tokens": true,
+					"Save new tokens to environment": true
+				}
+			]
+		},
+		{
+			"id": "29eb8629-a8f8-4ba4-afae-35ce7c8acdbd",
+			"name": "Refresh Token - Invalid Token",
+			"url": "http://localhost:3001/auth/refresh",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Response indicates authentication error": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates authentication error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Response indicates authentication error": true
+				}
+			]
+		},
+		{
+			"id": "ca48d14a-c823-4691-8f91-ef1864bc7da7",
+			"name": "Refresh Token - Expired Token",
+			"url": "http://localhost:3001/auth/refresh",
+			"time": 20,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 401": false,
+				"Response indicates token error": false
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Response indicates token error": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				20
+			],
+			"allTests": [
+				{
+					"Status code is 401": false,
+					"Response indicates token error": false
+				}
+			]
+		},
+		{
+			"id": "e192674f-eeaa-44d0-8221-333847053daa",
+			"name": "Logout - Success",
+			"url": "http://localhost:3001/auth/logout",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response has success flag": true,
+				"Clear tokens from environment": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has success flag": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Clear tokens from environment": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response has success flag": true,
+					"Clear tokens from environment": true
+				}
+			]
+		},
+		{
+			"id": "5bc4c4a4-038a-4e2d-b89b-74b5c53239de",
+			"name": "Logout - Invalid Token",
+			"url": "http://localhost:3001/auth/logout",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Response indicates authentication error": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response indicates authentication error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Response indicates authentication error": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 1043,
+	"collection": {
+		"requests": [
+			{
+				"id": "2bf17bf7-5eb4-48da-a505-d5b74420d494",
+				"method": "GET"
+			},
+			{
+				"id": "ca6f22c3-e298-4ee1-9f2f-85f141a280ed",
+				"method": "GET"
+			},
+			{
+				"id": "d77cfc5f-9822-47d2-8fce-fa0fb410e58f",
+				"method": "POST"
+			},
+			{
+				"id": "a947062d-122a-47f5-b1ec-9101deb35459",
+				"method": "POST"
+			},
+			{
+				"id": "4ccd8de3-fff2-4ce7-b2f1-fc0354c1dd60",
+				"method": "POST"
+			},
+			{
+				"id": "43f3304f-e6d3-45a2-b69b-594e38d95ede",
+				"method": "POST"
+			},
+			{
+				"id": "ec8c9969-5179-4d27-b438-73999bb41cf7",
+				"method": "POST"
+			},
+			{
+				"id": "803525a7-cb38-4753-b40f-63253049e836",
+				"method": "POST"
+			},
+			{
+				"id": "57d303bc-8802-4e4e-895d-76d949bac020",
+				"method": "POST"
+			},
+			{
+				"id": "3647aa1b-7787-471d-9775-1384b4dddf0b",
+				"method": "POST"
+			},
+			{
+				"id": "29eb8629-a8f8-4ba4-afae-35ce7c8acdbd",
+				"method": "POST"
+			},
+			{
+				"id": "ca48d14a-c823-4691-8f91-ef1864bc7da7",
+				"method": "POST"
+			},
+			{
+				"id": "e192674f-eeaa-44d0-8221-333847053daa",
+				"method": "POST"
+			},
+			{
+				"id": "5bc4c4a4-038a-4e2d-b89b-74b5c53239de",
+				"method": "POST"
+			}
+		]
+	}
+}

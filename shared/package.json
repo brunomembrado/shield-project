@@ -1,0 +1,32 @@
+{
+  "name": "@shield/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities, types, and middleware for Shield microservices platform",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "shield",
+    "shared",
+    "utilities",
+    "microservices"
+  ],
+  "author": "Shield Security, Inc.",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.1.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  }
+}

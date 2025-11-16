@@ -1,0 +1,36 @@
+{
+  "name": "@shield/platform",
+  "version": "1.0.0",
+  "description": "Shield Platform - Infrastructure layer between blockchain and traditional banking systems",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "test": "echo \"Run tests in individual services\"",
+    "validate:config": "ts-node shared/config/validation.ts"
+  },
+  "keywords": [
+    "shield",
+    "microservices",
+    "blockchain",
+    "usdt",
+    "fintech"
+  ],
+  "author": "Shield Security, Inc.",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-security": "^3.0.0",
+    "prettier": "^3.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

@@ -1,0 +1,194 @@
+# Docker Compose configuration for Shield Platform - Development Environment
+# Shield: Infrastructure layer between blockchain and traditional banking systems
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Single instance with multiple databases
+  postgres:
+    image: postgres:16-alpine
+    container_name: shield-postgres
+    environment:
+      POSTGRES_USER: shield
+      POSTGRES_PASSWORD: shield_secure_password_2024
+      POSTGRES_DB: shield
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+    networks:
+      - shield-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - For caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: shield-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - shield-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Auth Service - User authentication and JWT management
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: shield-auth-service
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://shield:shield_secure_password_2024@postgres:5432/shield_auth
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shield-network
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+
+  # Wallet Service - Wallet CRUD operations
+  wallet-service:
+    build:
+      context: ./services/wallet-service
+      dockerfile: Dockerfile
+    container_name: shield-wallet-service
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_URL: postgresql://shield:shield_secure_password_2024@postgres:5432/shield_wallets
+      AUTH_SERVICE_URL: http://auth-service:3001
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - shield-network
+    volumes:
+      - ./services/wallet-service:/app
+      - /app/node_modules
+
+  # Transaction Service - USDT payment processing
+  transaction-service:
+    build:
+      context: ./services/transaction-service
+      dockerfile: Dockerfile
+    container_name: shield-transaction-service
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DATABASE_URL: postgresql://shield:shield_secure_password_2024@postgres:5432/shield_transactions
+      BLOCKCHAIN_SERVICE_URL: http://blockchain-service:3004
+      COMPLIANCE_SERVICE_URL: http://compliance-service:3005
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shield-network
+    volumes:
+      - ./services/transaction-service:/app
+      - /app/node_modules
+
+  # Blockchain Service - Polygon/Tron integration
+  blockchain-service:
+    build:
+      context: ./services/blockchain-service
+      dockerfile: Dockerfile
+    container_name: shield-blockchain-service
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      DATABASE_URL: postgresql://shield:shield_secure_password_2024@postgres:5432/shield_blockchain
+      POLYGON_RPC_URL: ${POLYGON_RPC_URL}
+      TRON_RPC_URL: ${TRON_RPC_URL}
+    ports:
+      - "3004:3004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shield-network
+    volumes:
+      - ./services/blockchain-service:/app
+      - /app/node_modules
+
+  # Compliance Service - KYB/KYC and screening
+  compliance-service:
+    build:
+      context: ./services/compliance-service
+      dockerfile: Dockerfile
+    container_name: shield-compliance-service
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      DATABASE_URL: postgresql://shield:shield_secure_password_2024@postgres:5432/shield_compliance
+      COMPLIANCE_API_KEY: ${COMPLIANCE_API_KEY}
+    ports:
+      - "3005:3005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shield-network
+    volumes:
+      - ./services/compliance-service:/app
+      - /app/node_modules
+
+  # API Gateway - Central entry point
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: shield-api-gateway
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      AUTH_SERVICE_URL: http://auth-service:3001
+      WALLET_SERVICE_URL: http://wallet-service:3002
+      TRANSACTION_SERVICE_URL: http://transaction-service:3003
+      BLOCKCHAIN_SERVICE_URL: http://blockchain-service:3004
+      COMPLIANCE_SERVICE_URL: http://compliance-service:3005
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - wallet-service
+      - transaction-service
+      - blockchain-service
+      - compliance-service
+    networks:
+      - shield-network
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  shield-network:
+    driver: bridge
+

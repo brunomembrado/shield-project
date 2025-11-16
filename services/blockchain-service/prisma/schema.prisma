@@ -1,0 +1,126 @@
+// Prisma schema for Shield Blockchain Service
+// This service monitors blockchain networks and validates transactions
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Chain types supported by Shield platform
+enum ChainType {
+  POLYGON  // Polygon (MATIC) network
+  TRON     // Tron network
+}
+
+/// Transaction status on blockchain
+enum BlockchainTxStatus {
+  PENDING      // Transaction submitted to network
+  CONFIRMED    // Transaction confirmed
+  FAILED       // Transaction failed
+}
+
+/// BlockchainTransaction model stores information about blockchain transactions
+/// Used for monitoring and validation of USDT transfers
+model BlockchainTransaction {
+  /// Unique identifier (UUID v4)
+  id String @id @default(uuid())
+  
+  /// Transaction hash on blockchain
+  txHash String @unique @map("tx_hash")
+  
+  /// Blockchain network
+  chain ChainType
+  
+  /// Sender address
+  fromAddress String @map("from_address")
+  
+  /// Recipient address (Shield wallet)
+  toAddress String @map("to_address")
+  
+  /// Token contract address (USDT contract)
+  tokenAddress String @map("token_address")
+  
+  /// Amount in smallest unit (e.g., 1 USDT = 1000000 with 6 decimals)
+  amount String
+  
+  /// Amount in USDT (human-readable)
+  amountUSDT String @map("amount_usdt")
+  
+  /// Block number where transaction was included
+  blockNumber BigInt? @map("block_number")
+  
+  /// Number of confirmations
+  confirmations Int @default(0)
+  
+  /// Transaction status
+  status BlockchainTxStatus
+  
+  /// Gas used (Polygon only)
+  gasUsed String? @map("gas_used")
+  
+  /// Gas price (Polygon only)
+  gasPrice String? @map("gas_price")
+  
+  /// Energy used (Tron only)
+  energyUsed BigInt? @map("energy_used")
+  
+  /// Timestamp from blockchain
+  blockTimestamp DateTime? @map("block_timestamp")
+  
+  /// Raw transaction data (JSON)
+  rawData Json? @map("raw_data")
+  
+  /// Timestamp when record was created
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  /// Timestamp when record was last updated
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("blockchain_transactions")
+  @@index([txHash])
+  @@index([chain])
+  @@index([fromAddress])
+  @@index([toAddress])
+  @@index([status])
+  @@index([blockNumber])
+}
+
+/// NetworkStatus model tracks the health and sync status of blockchain networks
+model NetworkStatus {
+  /// Unique identifier (UUID v4)
+  id String @id @default(uuid())
+  
+  /// Blockchain network
+  chain ChainType @unique
+  
+  /// Latest block number on the network
+  latestBlock BigInt @map("latest_block")
+  
+  /// Latest block number we've processed
+  lastProcessedBlock BigInt @map("last_processed_block")
+  
+  /// Network is healthy and reachable
+  isHealthy Boolean @default(true) @map("is_healthy")
+  
+  /// Current gas price (Polygon only)
+  currentGasPrice String? @map("current_gas_price")
+  
+  /// Current energy price (Tron only)
+  currentEnergyPrice BigInt? @map("current_energy_price")
+  
+  /// Timestamp of last successful sync
+  lastSyncAt DateTime @map("last_sync_at")
+  
+  /// Timestamp when record was created
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  /// Timestamp when record was last updated
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("network_status")
+}
+

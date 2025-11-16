@@ -1,0 +1,83 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+tests/
+__tests__/
+
+# Documentation
+*.md
+!README.md
+docs/
+*.pdf
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+*.js.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# AWS
+.aws-sam/
+samconfig.toml
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc*
+tsconfig.json
+jest.config.js
+

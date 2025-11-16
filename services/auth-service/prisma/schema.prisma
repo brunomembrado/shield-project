@@ -1,0 +1,68 @@
+// Prisma schema for Shield Auth Service
+// This service handles user authentication and JWT token management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["shield_auth"]
+}
+
+/// User model represents a Shield platform user
+/// Users can be businesses (exporters/wholesalers) accepting USDT payments
+model User {
+  /// Unique identifier (UUID v4)
+  id        String   @id @default(uuid())
+  
+  /// Email address (used for login)
+  email     String   @unique
+  
+  /// Hashed password (bcrypt)
+  password  String
+  
+  /// Timestamp when user was created
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  /// Timestamp when user was last updated
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// Relation: User can have multiple refresh tokens
+  refreshTokens RefreshToken[]
+
+  @@schema("shield_auth")
+  @@map("users")
+  @@index([email])
+}
+
+/// RefreshToken model stores JWT refresh tokens for session management
+/// Allows users to obtain new access tokens without re-authentication
+model RefreshToken {
+  /// Unique identifier (UUID v4)
+  id        String   @id @default(uuid())
+  
+  /// Foreign key to User
+  userId    String   @map("user_id")
+  
+  /// The actual refresh token (JWT)
+  token     String   @unique
+  
+  /// Token expiration timestamp
+  expiresAt DateTime @map("expires_at")
+  
+  /// Timestamp when token was created
+  createdAt DateTime @default(now()) @map("created_at")
+
+  /// Relation: Refresh token belongs to one user
+  /// On delete cascade: When user is deleted, all their tokens are deleted
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("shield_auth")
+  @@map("refresh_tokens")
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+

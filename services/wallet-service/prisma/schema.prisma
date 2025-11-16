@@ -1,0 +1,57 @@
+// Prisma schema for Shield Wallet Service
+// This service manages user cryptocurrency wallet addresses
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["shield_wallets"]
+}
+
+/// Chain types supported by Shield platform
+enum ChainType {
+  POLYGON  // Polygon (MATIC) network
+  TRON     // Tron network
+}
+
+/// Wallet model represents a cryptocurrency wallet address owned by a user
+/// Users can have multiple wallets across different chains
+model Wallet {
+  /// Unique identifier (UUID v4)
+  id       String    @id @default(uuid())
+  
+  /// Foreign key to User (from auth-service)
+  /// This is the user ID from the auth service database
+  userId   String    @map("user_id")
+  
+  /// Optional label/tag for the wallet (e.g., "Main Wallet", "Business Account")
+  tag      String?
+  
+  /// Blockchain network (POLYGON or TRON)
+  chain    ChainType
+  
+  /// Wallet address on the blockchain
+  /// - Polygon: 0x... format (40 hex chars)
+  /// - Tron: T... format (34 chars)
+  address  String
+  
+  /// Whether this wallet is active and can be used for transactions
+  isActive Boolean   @default(true) @map("is_active")
+  
+  /// Timestamp when wallet was added
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  /// Timestamp when wallet was last updated
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@schema("shield_wallets")
+  @@map("wallets")
+  @@index([userId])
+  @@index([address])
+  @@index([chain])
+  @@unique([userId, address]) // User cannot add the same address twice
+}
+
