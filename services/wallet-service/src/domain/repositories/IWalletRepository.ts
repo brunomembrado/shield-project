@@ -7,7 +7,7 @@
  */
 
 import { Wallet } from '../entities/Wallet';
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 
 /**
  * Wallet filters

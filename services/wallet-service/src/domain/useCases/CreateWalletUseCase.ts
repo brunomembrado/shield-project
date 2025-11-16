@@ -8,14 +8,14 @@
 
 import { Wallet } from '../entities/Wallet';
 import { IWalletRepository } from '../repositories/IWalletRepository';
-import { ChainType } from '../../../../shared/types';
+import { ChainType } from '@shield/shared/types';
 import {
   ConflictError,
   ServiceError,
   handleUnknownError,
   ValidationError,
-} from '../../../../shared/errors';
-import { isNotNull } from '../../../../shared/utils/guards';
+} from '@shield/shared/errors';
+import { isNotNull } from '@shield/shared/utils/guards';
 import { v4 as uuidv4 } from 'uuid';
 
 /**

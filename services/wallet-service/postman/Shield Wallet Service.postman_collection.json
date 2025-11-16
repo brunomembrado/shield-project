@@ -1,0 +1,1509 @@
+{
+	"info": {
+		"_postman_id": "wallet-service-collection-v1",
+		"name": "Shield Wallet Service",
+		"description": "Comprehensive test suite for Shield Wallet Service API endpoints. Tests include normal flows, error cases, edge cases, and robustness testing.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01. Service Health & Info",
+			"item": [
+				{
+					"name": "Get Service Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has service info\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('service');",
+									"    pm.expect(jsonData.service).to.eql('Shield Wallet Service');",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData.status).to.eql('running');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{wallet_service_url}}/",
+							"host": ["{{wallet_service_url}}"],
+							"path": [""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Health check response is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData.status).to.eql('ok');",
+									"    pm.expect(jsonData).to.have.property('service');",
+									"    pm.expect(jsonData.service).to.eql('wallet-service');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{wallet_service_url}}/health",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02. Authentication Tests",
+			"item": [
+				{
+					"name": "Create Wallet - No Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response indicates authentication error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.eql('AUTHENTICATION_ERROR');",
+									"    pm.expect(jsonData.message).to.include('token');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Invalid Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response indicates invalid token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.eql('AUTHENTICATION_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token_12345"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Malformed Auth Header",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response indicates invalid format\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.eql('AUTHENTICATION_ERROR');",
+									"    pm.expect(jsonData.message).to.include('format');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "InvalidFormat token123"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Test Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03. Create Wallet Tests",
+			"item": [
+				{
+					"name": "Create Wallet - Success (Polygon)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success flag\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Wallet data is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('chain');",
+									"    pm.expect(jsonData.data.chain).to.eql('POLYGON');",
+									"    pm.expect(jsonData.data).to.have.property('address');",
+									"    pm.expect(jsonData.data).to.have.property('tag');",
+									"    pm.expect(jsonData.data.tag).to.eql('My Polygon Wallet');",
+									"    pm.expect(jsonData.data).to.have.property('isActive');",
+									"    pm.expect(jsonData.data.isActive).to.be.true;",
+									"    ",
+									"    // Save wallet ID for later tests",
+									"    pm.environment.set('polygon_wallet_id', jsonData.data.id);",
+									"    pm.environment.set('polygon_wallet_address', jsonData.data.address);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1\",\n  \"tag\": \"My Polygon Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Success (Tron)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Wallet data is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.chain).to.eql('TRON');",
+									"    pm.expect(jsonData.data.tag).to.eql('My Tron Wallet');",
+									"    ",
+									"    // Save wallet ID for later tests",
+									"    pm.environment.set('tron_wallet_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"TRON\",\n  \"address\": \"TYDzsYUEpvnYmQk4zGP9sWWcTEd2MiAtW6\",\n  \"tag\": \"My Tron Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Success (No Tag)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Wallet created without tag\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('tag');",
+									"    // Tag should be null or undefined",
+									"    pm.expect(jsonData.data.tag).to.satisfy(function(tag) {",
+									"        return tag === null || tag === undefined;",
+									"    });",
+									"    ",
+									"    pm.environment.set('no_tag_wallet_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Duplicate Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Response indicates conflict\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.eql('CONFLICT_ERROR');",
+									"    pm.expect(jsonData.message).to.include('already registered');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"{{polygon_wallet_address}}\",\n  \"tag\": \"Duplicate Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Invalid Chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates validation error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    pm.expect(jsonData.errors).to.be.an('array');",
+									"    var chainError = jsonData.errors.find(e => e.field === 'chain');",
+									"    pm.expect(chainError).to.exist;",
+									"    pm.expect(chainError.message).to.include('POLYGON or TRON');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"ETHEREUM\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"Invalid Chain\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Missing Chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates chain is required\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var chainError = jsonData.errors.find(e => e.field === 'chain');",
+									"    pm.expect(chainError).to.exist;",
+									"    pm.expect(chainError.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"No Chain\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Missing Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates address is required\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var addressError = jsonData.errors.find(e => e.field === 'address');",
+									"    pm.expect(addressError).to.exist;",
+									"    pm.expect(addressError.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"tag\": \"No Address\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Address Too Short",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates address length error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var addressError = jsonData.errors.find(e => e.field === 'address');",
+									"    pm.expect(addressError).to.exist;",
+									"    pm.expect(addressError.message).to.include('at least 26 characters');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x123\",\n  \"tag\": \"Too Short\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Wallet - Tag Too Long",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates tag length error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var tagError = jsonData.errors.find(e => e.field === 'tag');",
+									"    pm.expect(tagError).to.exist;",
+									"    pm.expect(tagError.message).to.include('at most 100 characters');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"address\": \"0x1234567890123456789012345678901234567890\",\n  \"tag\": \"This is a very long tag that exceeds the maximum allowed length of 100 characters for a wallet tag in the system\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04. Get Wallets Tests",
+			"item": [
+				{
+					"name": "Get All Wallets - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains wallet array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    pm.expect(jsonData.data.length).to.be.at.least(1);",
+									"});",
+									"",
+									"pm.test(\"Wallets have correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var wallet = jsonData.data[0];",
+									"    pm.expect(wallet).to.have.property('id');",
+									"    pm.expect(wallet).to.have.property('chain');",
+									"    pm.expect(wallet).to.have.property('address');",
+									"    pm.expect(wallet).to.have.property('isActive');",
+									"    pm.expect(wallet).to.have.property('createdAt');",
+									"    pm.expect(wallet).to.have.property('updatedAt');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallets - Filter by Chain (POLYGON)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All wallets are POLYGON\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    jsonData.data.forEach(function(wallet) {",
+									"        pm.expect(wallet.chain).to.eql('POLYGON');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets?chain=POLYGON",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"],
+							"query": [
+								{
+									"key": "chain",
+									"value": "POLYGON"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallets - Filter by Chain (TRON)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All wallets are TRON\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    jsonData.data.forEach(function(wallet) {",
+									"        pm.expect(wallet.chain).to.eql('TRON');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets?chain=TRON",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"],
+							"query": [
+								{
+									"key": "chain",
+									"value": "TRON"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallets - Filter by Active Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All wallets are active\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"    jsonData.data.forEach(function(wallet) {",
+									"        pm.expect(wallet.isActive).to.be.true;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets?isActive=true",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"],
+							"query": [
+								{
+									"key": "isActive",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallets - No Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response indicates authentication error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.eql('AUTHENTICATION_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05. Get Wallet by ID Tests",
+			"item": [
+				{
+					"name": "Get Wallet by ID - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains wallet data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data.id).to.eql(pm.environment.get('polygon_wallet_id'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallet by ID - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response indicates not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.eql('NOT_FOUND_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "00000000-0000-0000-0000-000000000000"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallet by ID - Invalid UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates validation error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var idError = jsonData.errors.find(e => e.field === 'id');",
+									"    pm.expect(idError).to.exist;",
+									"    pm.expect(idError.message).to.include('valid UUID');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/invalid-uuid-123",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "invalid-uuid-123"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06. Update Wallet Tests",
+			"item": [
+				{
+					"name": "Update Wallet - Tag Only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet tag updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('tag');",
+									"    pm.expect(jsonData.data.tag).to.eql('Updated Polygon Wallet');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag\": \"Updated Polygon Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - Deactivate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet deactivated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('isActive');",
+									"    pm.expect(jsonData.data.isActive).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isActive\": false\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{tron_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{tron_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - Reactivate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet reactivated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.isActive).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{tron_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{tron_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - Both Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Both fields updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.tag).to.eql('Updated Tag and Status');",
+									"    pm.expect(jsonData.data.isActive).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag\": \"Updated Tag and Status\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{no_tag_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response indicates not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.eql('NOT_FOUND_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag\": \"Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "00000000-0000-0000-0000-000000000000"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - No Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates at least one field required\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    pm.expect(jsonData.message).to.include('At least one field');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Wallet - Tag Too Long",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates tag length error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var tagError = jsonData.errors.find(e => e.field === 'tag');",
+									"    pm.expect(tagError).to.exist;",
+									"    pm.expect(tagError.message).to.include('at most 100 characters');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag\": \"This is a very long tag that exceeds the maximum allowed length of 100 characters for a wallet tag in the system\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "07. Delete Wallet Tests",
+			"item": [
+				{
+					"name": "Delete Wallet - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Wallet deleted successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.message).to.include('deleted');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{no_tag_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Wallet - Already Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response indicates not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.eql('NOT_FOUND_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{no_tag_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{no_tag_wallet_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Wallet - Invalid UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response indicates validation error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    var idError = jsonData.errors.find(e => e.field === 'id');",
+									"    pm.expect(idError).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/not-a-uuid",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "not-a-uuid"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Wallet - No Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Response indicates authentication error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.eql('AUTHENTICATION_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3002",
+			"type": "string"
+		}
+	]
+}
+

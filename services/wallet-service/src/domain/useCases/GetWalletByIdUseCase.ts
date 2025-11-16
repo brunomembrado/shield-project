@@ -13,8 +13,8 @@ import {
   AuthorizationError,
   ServiceError,
   handleUnknownError,
-} from '../../../../shared/errors';
-import { isNotNull } from '../../../../shared/utils/guards';
+} from '@shield/shared/errors';
+import { isNotNull } from '@shield/shared/utils/guards';
 
 /**
  * Get Wallet By ID Use Case

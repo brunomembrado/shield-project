@@ -6,9 +6,10 @@
  * @module wallet-service/domain/entities
  */
 
-import { ChainType } from '../../../../shared/types';
-import { isNotNull, isNonEmptyString, isValidUUID } from '../../../../shared/utils/guards';
-import { isValidEthereumAddress, isValidTronAddress } from '../../../../shared/utils';
+import { v4 as uuidv4 } from 'uuid';
+import { ChainType } from '@shield/shared/types';
+import { isNotNull, isNonEmptyString, isValidUUID } from '@shield/shared/utils/guards';
+import { isValidEthereumAddress, isValidTronAddress } from '@shield/shared/utils';
 
 /**
  * Wallet domain entity
@@ -22,7 +23,12 @@ export class Wallet {
     public readonly address: string,
     public readonly isActive: boolean,
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
+    // Encrypted private key storage (only for system-generated wallets)
+    public readonly privateKeyEncrypted: string | null = null,
+    public readonly encryptionIv: string | null = null,
+    public readonly encryptionSalt: string | null = null,
+    public readonly createdBySystem: boolean = false
   ) {
     this.validate();
   }
@@ -38,9 +44,55 @@ export class Wallet {
     tag: string | null = null,
     isActive: boolean = true,
     createdAt: Date = new Date(),
-    updatedAt: Date = new Date()
+    updatedAt: Date = new Date(),
+    privateKeyEncrypted: string | null = null,
+    encryptionIv: string | null = null,
+    encryptionSalt: string | null = null,
+    createdBySystem: boolean = false
   ): Wallet {
-    return new Wallet(id, userId, tag, chain, address, isActive, createdAt, updatedAt);
+    return new Wallet(
+      id,
+      userId,
+      tag,
+      chain,
+      address,
+      isActive,
+      createdAt,
+      updatedAt,
+      privateKeyEncrypted,
+      encryptionIv,
+      encryptionSalt,
+      createdBySystem
+    );
+  }
+
+  /**
+   * Creates a new system-generated Wallet with encrypted private key
+   * This is a convenience method for wallets created by our system
+   */
+  public static createWithEncryption(data: {
+    userId: string;
+    chain: ChainType;
+    address: string;
+    privateKeyEncrypted: string;
+    encryptionIv: string;
+    encryptionSalt: string;
+    tag?: string;
+  }): Wallet {
+    return new Wallet(
+      uuidv4(),
+      data.userId,
+      data.tag ?? null,
+      data.chain,
+      data.address,
+      true, // isActive
+      new Date(), // createdAt
+      new Date(), // updatedAt
+      data.privateKeyEncrypted,
+      data.encryptionIv,
+      data.encryptionSalt,
+      true // createdBySystem
+    );
   }
 
   /**
@@ -55,6 +107,10 @@ export class Wallet {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    privateKeyEncrypted?: string | null;
+    encryptionIv?: string | null;
+    encryptionSalt?: string | null;
+    createdBySystem?: boolean;
   }): Wallet {
     return new Wallet(
       data.id,
@@ -64,7 +120,11 @@ export class Wallet {
       data.address,
       data.isActive,
       data.createdAt,
-      data.updatedAt
+      data.updatedAt,
+      data.privateKeyEncrypted ?? null,
+      data.encryptionIv ?? null,
+      data.encryptionSalt ?? null,
+      data.createdBySystem ?? false
     );
   }
 
@@ -110,7 +170,11 @@ export class Wallet {
       this.address,
       true,
       this.createdAt,
-      new Date()
+      new Date(),
+      this.privateKeyEncrypted,
+      this.encryptionIv,
+      this.encryptionSalt,
+      this.createdBySystem
     );
   }
 
@@ -126,7 +190,11 @@ export class Wallet {
       this.address,
       false,
       this.createdAt,
-      new Date()
+      new Date(),
+      this.privateKeyEncrypted,
+      this.encryptionIv,
+      this.encryptionSalt,
+      this.createdBySystem
     );
   }
 
@@ -142,7 +210,11 @@ export class Wallet {
       this.address,
       this.isActive,
       this.createdAt,
-      new Date()
+      new Date(),
+      this.privateKeyEncrypted,
+      this.encryptionIv,
+      this.encryptionSalt,
+      this.createdBySystem
     );
   }
 
@@ -155,6 +227,7 @@ export class Wallet {
 
   /**
    * Converts to plain object for serialization
+   * NOTE: NEVER includes encrypted private key for security
    */
   public toPlainObject(): {
     id: string;
@@ -163,6 +236,7 @@ export class Wallet {
     chain: ChainType;
     address: string;
     isActive: boolean;
+    createdBySystem: boolean; // Indicates if private key is stored (can be revealed)
     createdAt: Date;
     updatedAt: Date;
   } {
@@ -173,8 +247,10 @@ export class Wallet {
       chain: this.chain,
       address: this.address,
       isActive: this.isActive,
+      createdBySystem: this.createdBySystem, // Client needs this to know if private key can be revealed
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      // SECURITY: Never include privateKeyEncrypted, encryptionIv, encryptionSalt
     };
   }
 }

@@ -6,7 +6,7 @@
  * @module wallet-service/infrastructure
  */
 
-import { DatabaseConnection } from '../../../shared/database/DatabaseConnection';
+import { DatabaseConnection } from '@shield/shared/database/DatabaseConnection';
 
 // Domain repositories (interfaces)
 import { IWalletRepository } from '../domain/repositories/IWalletRepository';
@@ -20,6 +20,8 @@ import { GetUserWalletsUseCase } from '../domain/useCases/GetUserWalletsUseCase'
 import { GetWalletByIdUseCase } from '../domain/useCases/GetWalletByIdUseCase';
 import { UpdateWalletUseCase } from '../domain/useCases/UpdateWalletUseCase';
 import { DeleteWalletUseCase } from '../domain/useCases/DeleteWalletUseCase';
+import { GenerateWalletUseCase } from '../domain/useCases/GenerateWalletUseCase';
+import { RevealPrivateKeyUseCase } from '../domain/useCases/RevealPrivateKeyUseCase';
 
 // Presentation layer
 import { WalletController } from '../presentation/controllers/WalletController';
@@ -39,6 +41,8 @@ export class DependencyContainer {
   public readonly getWalletByIdUseCase: GetWalletByIdUseCase;
   public readonly updateWalletUseCase: UpdateWalletUseCase;
   public readonly deleteWalletUseCase: DeleteWalletUseCase;
+  public readonly generateWalletUseCase: GenerateWalletUseCase;
+  public readonly revealPrivateKeyUseCase: RevealPrivateKeyUseCase;
 
   // Controllers
   public readonly walletController: WalletController;
@@ -58,6 +62,8 @@ export class DependencyContainer {
     this.getWalletByIdUseCase = new GetWalletByIdUseCase(this.walletRepository);
     this.updateWalletUseCase = new UpdateWalletUseCase(this.walletRepository);
     this.deleteWalletUseCase = new DeleteWalletUseCase(this.walletRepository);
+    this.generateWalletUseCase = new GenerateWalletUseCase(this.walletRepository);
+    this.revealPrivateKeyUseCase = new RevealPrivateKeyUseCase(this.walletRepository);
 
     // Initialize controllers
     this.walletController = new WalletController(
@@ -65,7 +71,9 @@ export class DependencyContainer {
       this.getUserWalletsUseCase,
       this.getWalletByIdUseCase,
       this.updateWalletUseCase,
-      this.deleteWalletUseCase
+      this.deleteWalletUseCase,
+      this.generateWalletUseCase,
+      this.revealPrivateKeyUseCase
     );
   }
 

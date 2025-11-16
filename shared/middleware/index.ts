@@ -41,112 +41,7 @@ declare global {
 // ============================================================================
 // Authentication Middleware
 // ============================================================================
-
-/**
- * Authenticates JWT token from Authorization header
- * 
- * Extracts Bearer token from header, verifies it, and attaches user data to request.
- * Returns 401 if token is missing or invalid.
- * 
- * @param req - Express request object
- * @param res - Express response object
- * @param next - Express next function
- * 
- * @example
- * ```typescript
- * router.get('/profile', authenticateToken, getUserProfile);
- * ```
- */
-export function authenticateToken(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
-  try {
-    // Extract token from Authorization header (Bearer <token>)
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      res.status(401).json(
-        createErrorResponse('Access token required', 401, req.path)
-      );
-      return;
-    }
-
-    // Verify JWT secret is configured
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      logError(new Error('JWT_SECRET is not defined in environment variables'));
-      res.status(500).json(
-        createErrorResponse('Server configuration error', 500, req.path)
-      );
-      return;
-    }
-
-    // Verify and decode token
-    jwt.verify(token, jwtSecret, (err: Error | null, decoded: unknown) => {
-      if (err || !decoded) {
-        // Token is invalid or expired
-        res.status(403).json(
-          createErrorResponse('Invalid or expired token', 403, req.path)
-        );
-        return;
-      }
-
-      // Attach user information to request
-      const payload = decoded as JWTPayload;
-      req.user = payload;
-      req.userId = payload.userId;
-      next();
-    });
-  } catch (error) {
-    logError(error as Error, { path: req.path, method: req.method });
-    res.status(500).json(
-      createErrorResponse('Authentication error', 500, req.path)
-    );
-  }
-}
-
-/**
- * Optional authentication middleware
- * 
- * Similar to authenticateToken but doesn't fail if token is missing.
- * Useful for endpoints that work both with and without authentication.
- * 
- * @param req - Express request object
- * @param res - Express response object
- * @param next - Express next function
- */
-export function optionalAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    // No token provided, continue without authentication
-    next();
-    return;
-  }
-
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) {
-    next();
-    return;
-  }
-
-  jwt.verify(token, jwtSecret, (err: Error | null, decoded: unknown) => {
-    if (!err && decoded) {
-      const payload = decoded as JWTPayload;
-      req.user = payload;
-      req.userId = payload.userId;
-    }
-    next();
-  });
-}
+// See auth.ts for robust JWT authentication middleware
 
 // ============================================================================
 // Error Handling Middleware
@@ -224,10 +119,11 @@ export function errorHandler(
 /**
  * Creates validation middleware from Joi schema
  * 
- * Validates request body against provided Joi schema.
+ * Validates request body, query, or params against provided Joi schema.
  * Returns 400 with validation errors if validation fails.
  * 
  * @param schema - Joi validation schema
+ * @param target - What to validate: 'body', 'query', or 'params' (default: 'body')
  * @returns Express middleware function
  * 
  * @example
@@ -240,11 +136,15 @@ export function errorHandler(
  * });
  * 
  * router.post('/wallets', validateRequest(createWalletSchema), createWallet);
+ * router.get('/wallets', validateRequest(querySchema, 'query'), getWallets);
+ * router.get('/wallets/:id', validateRequest(paramsSchema, 'params'), getWallet);
  * ```
  */
-export function validateRequest(schema: Schema) {
+export function validateRequest(schema: Schema, target: 'body' | 'query' | 'params' = 'body') {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const { error, value } = schema.validate(req.body, {
+    const dataToValidate = req[target];
+    
+    const { error, value } = schema.validate(dataToValidate, {
       abortEarly: false, // Return all errors, not just the first one
       stripUnknown: true, // Remove unknown fields
       convert: true, // Convert types when possible
@@ -262,8 +162,11 @@ export function validateRequest(schema: Schema) {
       return;
     }
 
-    // Replace req.body with validated and sanitized value
-    req.body = value;
+    // Replace req[target] with validated and sanitized value
+    // Note: In Express 5, req.query is read-only, so we skip assignment for 'query'
+    if (target !== 'query') {
+      (req as any)[target] = value;
+    }
     next();
   };
 }
@@ -593,4 +496,8 @@ export function requireService(serviceName: string) {
 // ============================================================================
 
 export { setupSecurityHeaders } from './security';
+export { authenticate, optionalAuth, type AuthenticatedRequest } from './auth';
+
+// Legacy alias for backward compatibility
+export { authenticate as authenticateToken } from './auth';
 

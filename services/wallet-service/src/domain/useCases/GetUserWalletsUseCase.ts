@@ -12,7 +12,7 @@ import { WalletFilters } from '../repositories/IWalletRepository';
 import {
   ServiceError,
   handleUnknownError,
-} from '../../../../shared/errors';
+} from '@shield/shared/errors';
 
 /**
  * Get User Wallets Use Case

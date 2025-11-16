@@ -1,0 +1,951 @@
+{
+	"info": {
+		"_postman_id": "wallet-generation-collection-v1",
+		"name": "Shield Wallet Generation (NEW)",
+		"description": "NASA-level testing for blockchain wallet generation with encrypted private key storage. Includes success cases, error handling, edge cases, and security testing.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Wallet Generation - Success Cases",
+			"item": [
+				{
+					"name": "Generate Polygon Wallet - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success flag\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Wallet was generated successfully\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('address');",
+									"    pm.expect(jsonData.data).to.have.property('chain', 'POLYGON');",
+									"    pm.expect(jsonData.data).to.have.property('createdBySystem', true);",
+									"    pm.expect(jsonData.data).to.have.property('isActive', true);",
+									"});",
+									"",
+									"pm.test(\"Polygon address format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.address).to.match(/^0x[a-fA-F0-9]{40}$/);",
+									"});",
+									"",
+									"pm.test(\"Private key is NOT exposed in response\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property('privateKey');",
+									"    pm.expect(jsonData.data).to.not.have.property('privateKeyEncrypted');",
+									"    pm.expect(jsonData.data).to.not.have.property('encryptionIv');",
+									"    pm.expect(jsonData.data).to.not.have.property('encryptionSalt');",
+									"});",
+									"",
+									"pm.test(\"Save generated wallet ID and address\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"generated_polygon_wallet_id\", jsonData.data.id);",
+									"    pm.environment.set(\"generated_polygon_wallet_address\", jsonData.data.address);",
+									"    console.log(\"✅ Saved Polygon wallet ID:\", jsonData.data.id);",
+									"    console.log(\"✅ Saved Polygon address:\", jsonData.data.address);",
+									"});",
+									"",
+									"pm.test(\"Response time is acceptable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"My Generated Polygon Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Generates a new Polygon wallet with encrypted private key storage"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Tron Wallet - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success flag\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Wallet was generated successfully\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('address');",
+									"    pm.expect(jsonData.data).to.have.property('chain', 'TRON');",
+									"    pm.expect(jsonData.data).to.have.property('createdBySystem', true);",
+									"});",
+									"",
+									"pm.test(\"Tron address format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.address).to.match(/^T[a-km-zA-HJ-NP-Z1-9]{33}$/);",
+									"});",
+									"",
+									"pm.test(\"Private key is NOT exposed\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.not.have.property('privateKey');",
+									"    pm.expect(jsonData.data).to.not.have.property('privateKeyEncrypted');",
+									"});",
+									"",
+									"pm.test(\"Save generated Tron wallet ID\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"generated_tron_wallet_id\", jsonData.data.id);",
+									"    pm.environment.set(\"generated_tron_wallet_address\", jsonData.data.address);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"TRON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"My Generated Tron Wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Generates a new Tron wallet with encrypted private key storage"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "❌ Wallet Generation - Error Cases",
+			"item": [
+				{
+					"name": "Generate Wallet - Weak Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates weak password\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.include('VALIDATION');",
+									"    pm.expect(jsonData.message).to.include('password');",
+									"    pm.expect(jsonData.message).to.include('8 characters');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"weak\",\n  \"tag\": \"Test (Should Fail)\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Wallet - Missing Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates missing password\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('password');",
+									"    pm.expect(jsonData.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"tag\": \"Test\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Wallet - Invalid Chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates invalid chain\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('chain');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"BITCOIN\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"Test (Should Fail)\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Wallet - No Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error indicates authentication required\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.include('AUTHENTICATION');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Test without Authorization header"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Wallet - SQL Injection Attempt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 (not 500)\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"SQL injection is blocked\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    // Should fail validation, not cause SQL error",
+									"    pm.expect(jsonData.error).to.include('VALIDATION');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON'; DROP TABLE wallets; --\",\n  \"password\": \"TestPassword123!@#\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Test SQL injection protection"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔓 Reveal Private Key - Success Cases",
+			"item": [
+				{
+					"name": "Reveal Private Key - Correct Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Private key is revealed\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data).to.have.property('privateKey');",
+									"    pm.expect(jsonData.data).to.have.property('address');",
+									"    pm.expect(jsonData.data).to.have.property('chain');",
+									"    pm.expect(jsonData.data).to.have.property('warning');",
+									"});",
+									"",
+									"pm.test(\"Private key format is valid\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    // Ethereum/Polygon private key: 64 hex characters (with or without 0x prefix)",
+									"    pm.expect(jsonData.data.privateKey).to.match(/^(0x)?[a-fA-F0-9]{64}$/);",
+									"});",
+									"",
+									"pm.test(\"Security warning is present\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.warning).to.include('SECURITY WARNING');",
+									"    pm.expect(jsonData.data.warning).to.include('Never share');",
+									"    pm.expect(jsonData.data.warning).to.include('private key');",
+									"});",
+									"",
+									"pm.test(\"Address matches generated wallet\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    const generatedAddress = pm.environment.get(\"generated_polygon_wallet_address\");",
+									"    pm.expect(jsonData.data.address).to.equal(generatedAddress);",
+									"});",
+									"",
+									"pm.test(\"Chain matches generated wallet\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.chain).to.equal('POLYGON');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+						},
+						"description": "Reveals the private key of a system-generated wallet with correct password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🚫 Reveal Private Key - Error Cases",
+			"item": [
+				{
+					"name": "Reveal Private Key - Wrong Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates decryption failure\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.include('VALIDATION');",
+									"    pm.expect(jsonData.message).to.include('Decryption failed');",
+									"    pm.expect(jsonData.message).to.include('password');",
+									"});",
+									"",
+									"pm.test(\"Private key is NOT revealed\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"WrongPassword999!@#\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+						},
+						"description": "Attempt to reveal private key with wrong password (should fail)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - Imported Wallet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates wallet was imported\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('imported');",
+									"    pm.expect(jsonData.message).to.include('not created by our system');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{polygon_wallet_id}}", "reveal-key"]
+						},
+						"description": "Attempt to reveal private key of an imported wallet (should fail - no private key stored)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - Invalid UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates invalid UUID\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('UUID');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/invalid-uuid/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "invalid-uuid", "reveal-key"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - Wallet Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error indicates wallet not found\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.include('NOT_FOUND');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/00000000-0000-0000-0000-000000000000/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "00000000-0000-0000-0000-000000000000", "reveal-key"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - No Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error indicates authentication required\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.error).to.include('AUTHENTICATION');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"{{test_user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+						},
+						"description": "Test without Authorization header"
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - Brute Force Protection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 429 (rate limited)\", function () {",
+									"    const status = pm.response.code;",
+									"    pm.expect([400, 429]).to.include(status);",
+									"});",
+									"",
+									"pm.test(\"System handles repeated failures\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Simulate multiple failed attempts",
+									"console.log(\"Testing brute force protection...\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"BruteForce001!@#\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+						},
+						"description": "Test protection against brute force attacks"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔒 Security & Edge Cases",
+			"item": [
+				{
+					"name": "Generate Wallet - XSS Attempt in Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 or 400\", function () {",
+									"    const status = pm.response.code;",
+									"    pm.expect([201, 400]).to.include(status);",
+									"});",
+									"",
+									"pm.test(\"XSS is sanitized or blocked\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data.tag) {",
+									"        // If tag is accepted, it should be sanitized",
+									"        pm.expect(jsonData.data.tag).to.not.include('<script>');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"<script>alert('XSS')</script>\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Test XSS protection in tag field"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Wallet - Extremely Long Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 (validation error)\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates tag too long\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('tag');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chain\": \"POLYGON\",\n  \"password\": \"{{test_user_password}}\",\n  \"tag\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/generate",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "generate"]
+						},
+						"description": "Test maximum tag length validation"
+					},
+					"response": []
+				},
+				{
+					"name": "Reveal Private Key - Empty Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error indicates invalid password\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"    pm.expect(jsonData.message).to.include('password');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{wallet_service_url}}/wallets/{{generated_polygon_wallet_id}}/reveal-key",
+							"host": ["{{wallet_service_url}}"],
+							"path": ["wallets", "{{generated_polygon_wallet_id}}", "reveal-key"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
+

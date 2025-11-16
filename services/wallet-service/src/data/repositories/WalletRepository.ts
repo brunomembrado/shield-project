@@ -9,9 +9,9 @@
 import { PrismaClient } from '@prisma/client';
 import { Wallet } from '../../domain/entities/Wallet';
 import { IWalletRepository, WalletFilters } from '../../domain/repositories/IWalletRepository';
-import { ChainType } from '../../../../shared/types';
-import { DatabaseConnection } from '../../../../shared/database/DatabaseConnection';
-import { isNotNull } from '../../../../shared/utils/guards';
+import { ChainType } from '@shield/shared/types';
+import { DatabaseConnection } from '@shield/shared/database/DatabaseConnection';
+import { isNotNull } from '@shield/shared/utils/guards';
 
 /**
  * Wallet Repository Implementation
@@ -42,6 +42,10 @@ export class WalletRepository implements IWalletRepository {
       isActive: walletData.isActive,
       createdAt: walletData.createdAt,
       updatedAt: walletData.updatedAt,
+      privateKeyEncrypted: walletData.privateKeyEncrypted,
+      encryptionIv: walletData.encryptionIv,
+      encryptionSalt: walletData.encryptionSalt,
+      createdBySystem: walletData.createdBySystem,
     });
   }
 
@@ -69,6 +73,10 @@ export class WalletRepository implements IWalletRepository {
       isActive: walletData.isActive,
       createdAt: walletData.createdAt,
       updatedAt: walletData.updatedAt,
+      privateKeyEncrypted: walletData.privateKeyEncrypted,
+      encryptionIv: walletData.encryptionIv,
+      encryptionSalt: walletData.encryptionSalt,
+      createdBySystem: walletData.createdBySystem,
     });
   }
 
@@ -105,6 +113,10 @@ export class WalletRepository implements IWalletRepository {
         isActive: walletData.isActive,
         createdAt: walletData.createdAt,
         updatedAt: walletData.updatedAt,
+        privateKeyEncrypted: walletData.privateKeyEncrypted,
+        encryptionIv: walletData.encryptionIv,
+        encryptionSalt: walletData.encryptionSalt,
+        createdBySystem: walletData.createdBySystem,
       })
     );
   }
@@ -136,6 +148,10 @@ export class WalletRepository implements IWalletRepository {
       isActive: walletData.isActive,
       createdAt: walletData.createdAt,
       updatedAt: walletData.updatedAt,
+      privateKeyEncrypted: walletData.privateKeyEncrypted,
+      encryptionIv: walletData.encryptionIv,
+      encryptionSalt: walletData.encryptionSalt,
+      createdBySystem: walletData.createdBySystem,
     });
   }
 
@@ -153,6 +169,11 @@ export class WalletRepository implements IWalletRepository {
         isActive: wallet.isActive,
         createdAt: wallet.createdAt,
         updatedAt: wallet.updatedAt,
+        // Encrypted private key fields (for system-generated wallets)
+        privateKeyEncrypted: wallet.privateKeyEncrypted,
+        encryptionIv: wallet.encryptionIv,
+        encryptionSalt: wallet.encryptionSalt,
+        createdBySystem: wallet.createdBySystem,
       },
     });
 
@@ -165,6 +186,10 @@ export class WalletRepository implements IWalletRepository {
       isActive: walletData.isActive,
       createdAt: walletData.createdAt,
       updatedAt: walletData.updatedAt,
+      privateKeyEncrypted: walletData.privateKeyEncrypted,
+      encryptionIv: walletData.encryptionIv,
+      encryptionSalt: walletData.encryptionSalt,
+      createdBySystem: walletData.createdBySystem,
     });
   }
 
@@ -190,6 +215,10 @@ export class WalletRepository implements IWalletRepository {
       isActive: walletData.isActive,
       createdAt: walletData.createdAt,
       updatedAt: walletData.updatedAt,
+      privateKeyEncrypted: walletData.privateKeyEncrypted,
+      encryptionIv: walletData.encryptionIv,
+      encryptionSalt: walletData.encryptionSalt,
+      createdBySystem: walletData.createdBySystem,
     });
   }
 

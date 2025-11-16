@@ -26,6 +26,9 @@ export class TokenService implements ITokenService {
     this.refreshTokenSecret = this.getRequiredEnv('JWT_REFRESH_SECRET');
     this.accessTokenExpiresIn = process.env.JWT_EXPIRES_IN || '15m';
     this.refreshTokenExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+    
+    // DEBUG: Log JWT secret length for verification
+    console.log(`[DEBUG AUTH-SERVICE] JWT_SECRET length: ${this.accessTokenSecret.length}, First 20 chars: ${this.accessTokenSecret.substring(0, 20)}...`);
   }
 
   /**
