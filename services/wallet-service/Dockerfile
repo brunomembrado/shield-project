@@ -5,14 +5,15 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and prisma schema
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY prisma ./prisma
 
 # Install dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy source code
+# Copy rest of source code
 COPY . .
 
 # Generate Prisma client

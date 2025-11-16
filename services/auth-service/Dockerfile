@@ -7,14 +7,15 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files first for better caching (Best Practice 8.8)
+# Copy package files and prisma schema first for better caching (Best Practice 8.8)
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY prisma ./prisma
 
 # Install ALL dependencies (including dev) for building
 RUN npm ci && npm cache clean --force
 
-# Copy source code
+# Copy rest of source code
 COPY . .
 
 # Generate Prisma client
